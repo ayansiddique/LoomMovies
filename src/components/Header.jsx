@@ -213,6 +213,20 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
       {isMobileMenuOpen && (
         <div className="mobile-dropdown glass animate-fade-in">
           <nav className="mobile-nav">
+            {/* Mobile Search Input */}
+            <form onSubmit={handleSearchSubmitLocal} className="mobile-search-form">
+              <input
+                type="text"
+                placeholder="Search movies, anime, dramas..."
+                value={searchVal}
+                onChange={handleSearchChange}
+                className="mobile-search-input glass"
+              />
+              <button type="submit" className="mobile-search-btn">
+                <Search size={16} />
+              </button>
+            </form>
+            
             <button 
               className={`mobile-nav-link ${currentView === 'home' && !searchVal ? 'active' : ''}`}
               onClick={() => { setView('home'); setSearchVal(''); setIsMobileMenuOpen(false); }}
@@ -584,6 +598,35 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
           .search-wrapper {
             display: none; /* simple search hidden on super small screens, we can add it to toggle menu */
           }
+        }
+
+        /* Mobile Search Form Styles */
+        .mobile-search-form {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          margin-bottom: 20px;
+          position: relative;
+        }
+        .mobile-search-input {
+          width: 100%;
+          padding: 10px 40px 10px 14px;
+          border-radius: var(--border-radius-sm);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: white;
+          font-size: 0.9rem;
+          background: rgba(0, 0, 0, 0.2);
+        }
+        .mobile-search-btn {
+          position: absolute;
+          right: 12px;
+          background: none;
+          border: none;
+          color: var(--color-text-dim);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
     </header>

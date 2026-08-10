@@ -165,13 +165,9 @@ export default function PreLaunch({ onBypass }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 20px;
-          overflow: hidden;
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          padding: 40px 20px;
+          overflow-y: auto;
+          position: relative;
           z-index: 10000;
         }
 
