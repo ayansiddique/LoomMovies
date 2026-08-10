@@ -6,7 +6,6 @@ import MovieRow from './components/MovieRow';
 import MovieCard from './components/MovieCard';
 import Watch from './views/Watch';
 import PreLaunch from './views/PreLaunch';
-import SocialChannels from './components/SocialChannels';
 import { CURATED_LISTS, TMDB_CONFIG } from './config/tmdb';
 import { Heart, Search, Play, RefreshCw, Film, Sparkles } from 'lucide-react';
 
@@ -179,10 +178,7 @@ export default function App() {
               onWatchlistToggle={handleWatchlistToggle} 
             />
 
-            {/* Premium Community channels card */}
-            <div className="row-container animate-fade-in-up">
-              <SocialChannels hideTimer={true} />
-            </div>
+
 
             {/* Continue Watching / Watch History (Dynamic LocalStorage) */}
             {historyItems.length > 0 && (

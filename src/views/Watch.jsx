@@ -1252,6 +1252,31 @@ export default function Watch({ mediaId, mediaType, setView }) {
         }
         
         @media (max-width: 768px) {
+          .server-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            width: 100%;
+            margin-top: 8px;
+          }
+          .server-btn-selector {
+            width: 100%;
+            text-align: center;
+            padding: 10px 6px;
+            font-size: 0.74rem;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+          }
+          .server-switcher-left {
+            width: 100%;
+            flex-direction: column;
+            align-items: flex-start;
+          }
           .report-server-btn {
             width: 100%;
             justify-content: center;

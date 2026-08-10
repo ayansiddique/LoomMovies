@@ -8,6 +8,7 @@ export default function CommentsSection({ mediaId, mediaType }) {
   const [text, setText] = useState('');
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
+  const [showForm, setShowForm] = useState(false);
 
   // Load comments from localStorage
   useEffect(() => {
@@ -83,57 +84,79 @@ export default function CommentsSection({ mediaId, mediaType }) {
         Comments & Reviews ({comments.length})
       </h3>
 
-      {/* Review Write Form */}
-      <form onSubmit={handleSubmit} className="comment-form">
-        <div className="form-row">
-          <input
-            type="text"
-            placeholder="Your name (e.g. MarvelFan)"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="comment-input name-input glass"
-            maxLength={25}
-          />
+      {/* Add a Review toggle button */}
+      {!showForm ? (
+        <button 
+          onClick={() => setShowForm(true)} 
+          className="btn btn-primary toggle-review-btn"
+          style={{ marginBottom: '24px', width: '100%', padding: '12px' }}
+        >
+          Write a Review / Add Comment
+        </button>
+      ) : (
+        /* Review Write Form */
+        <form onSubmit={(e) => { handleSubmit(e); setShowForm(false); }} className="comment-form animate-fade-in">
+          <div className="form-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '8px' }}>
+            <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: 'white' }}>Share Your Review</h4>
+            <button 
+              type="button" 
+              onClick={() => setShowForm(false)} 
+              style={{ background: 'none', border: 'none', color: 'var(--color-text-dim)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: '600', textTransform: 'uppercase' }}
+            >
+              Cancel
+            </button>
+          </div>
           
-          {/* Star selector */}
-          <div className="star-selector">
-            <span className="star-label">Rating:</span>
-            <div className="stars">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  onMouseEnter={() => setHoverRating(star)}
-                  onMouseLeave={() => setHoverRating(0)}
-                  className="star-btn"
-                >
-                  <Star 
-                    size={16} 
-                    fill={star <= (hoverRating || rating) ? "currentColor" : "none"}
-                    className={star <= (hoverRating || rating) ? "star-filled" : "star-empty"}
-                  />
-                </button>
-              ))}
+          <div className="form-row">
+            <input
+              type="text"
+              placeholder="Your name (e.g. MarvelFan)"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="comment-input name-input glass"
+              maxLength={25}
+            />
+            
+            {/* Star selector */}
+            <div className="star-selector">
+              <span className="star-label">Rating:</span>
+              <div className="stars">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    className="star-btn"
+                  >
+                    <Star 
+                      size={16} 
+                      fill={star <= (hoverRating || rating) ? "currentColor" : "none"}
+                      className={star <= (hoverRating || rating) ? "star-filled" : "star-empty"}
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="text-area-wrapper">
-          <textarea
-            placeholder="Share your thoughts about this movie/show..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            className="comment-textarea glass"
-            required
-            rows={3}
-            maxLength={500}
-          />
-          <button type="submit" className="btn btn-primary submit-comment-btn">
-            <Send size={16} /> Post
-          </button>
-        </div>
-      </form>
+          <div className="text-area-wrapper">
+            <textarea
+              placeholder="Share your thoughts about this movie/show..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className="comment-textarea glass"
+              required
+              rows={3}
+              maxLength={500}
+            />
+            <button type="submit" className="btn btn-primary submit-comment-btn">
+              <Send size={16} /> Post Review
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Comments List */}
       <div className="comments-list">
