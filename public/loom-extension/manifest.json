@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Loom Movies Ad-Blocker Helper",
+  "version": "1.0",
+  "description": "Automatically blocks popups and redirects inside Loom Movies stream players.",
+  "icons": {
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.vidsrc.to/*", "*://*.vidsrc.me/*", "*://*.embed.su/*", "*://*.vidsrc.xyz/*", "*://*.vidsrc.cc/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}

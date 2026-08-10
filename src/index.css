@@ -1,0 +1,356 @@
+/* Design System for Loom Movies - Premium, Sleek, Cinematic UI */
+
+:root {
+  /* Fonts */
+  --font-primary: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-secondary: 'Plus Jakarta Sans', sans-serif;
+
+  /* Color Palette - Premium Obsidian & Glowing Neon Accents */
+  --color-bg-deep: #050508;
+  --color-bg-card: rgba(18, 18, 24, 0.65);
+  --color-bg-nav: rgba(9, 9, 12, 0.75);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(124, 58, 237, 0.4);
+  
+  --color-primary: #7c3aed; /* Electric Purple */
+  --color-primary-glow: rgba(124, 58, 237, 0.35);
+  --color-secondary: #db2777; /* Deep Pink */
+  --color-accent: #06b6d4; /* Glowing Cyan */
+  --color-accent-glow: rgba(6, 182, 212, 0.3);
+
+  --color-text-main: #f4f4f5;
+  --color-text-muted: #a1a1aa;
+  --color-text-dim: #71717a;
+  
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* Glassmorphism, Shadows & Borders */
+  --glass-blur: blur(14px);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --border-radius-sm: 8px;
+  --border-radius-md: 14px;
+  --border-radius-lg: 24px;
+  --transition-smooth: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: all 0.2s ease;
+}
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  background-color: var(--color-bg-deep);
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-bg-deep);
+  color: var(--color-text-main);
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  transition: var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Focus outline */
+input:focus, button:focus {
+  outline: none;
+}
+
+/* CSS Utilities & Animations */
+.glass {
+  background: var(--color-bg-card);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-nav {
+  background: var(--color-bg-nav);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.glow-purple:hover {
+  box-shadow: 0 0 25px var(--color-primary-glow);
+  border-color: var(--color-border-hover);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa 0%, #db2777 50%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #6d28d9 100%);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-main);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 0;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #18181b 25%, #27272a 50%, #18181b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-sm);
+}
+
+/* App Container Layout */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding-top: 80px; /* offset for sticky header */
+}
+
+/* Horizontal Scroll Container (Category Rows) */
+.row-container {
+  position: relative;
+  margin: 32px 0;
+  padding: 0 4%;
+}
+
+.row-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-secondary);
+  letter-spacing: -0.02em;
+}
+
+.row-cards {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 0;
+  scrollbar-width: none; /* Firefox */
+}
+
+.row-cards::-webkit-scrollbar {
+  display: none; /* Safari & Chrome */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .row-container {
+    padding: 0 5%;
+    margin: 20px 0;
+  }
+  .row-title {
+    font-size: 1.25rem;
+  }
+}
+
+/* 14th August Pakistan Independence Day Custom Theme Overrides */
+body.theme-aug14 {
+  --color-primary: #10b981; /* Emerald/Pakistan Green */
+  --color-primary-glow: rgba(16, 185, 129, 0.35);
+  --color-secondary: #059669; /* Darker Green */
+  --color-accent: #34d399; /* Mint Green */
+  --color-accent-glow: rgba(52, 211, 153, 0.3);
+  --color-border-hover: rgba(16, 185, 129, 0.4);
+}
+
+body.theme-aug14 .gradient-text {
+  background: linear-gradient(135deg, #34d399 0%, #ffffff 50%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.theme-aug14 .btn-primary {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+}
+
+body.theme-aug14 .btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+body.theme-aug14 .type-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: #10b981;
+}
+
+body.theme-aug14 .special-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-left: 8px;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  animation: pulse-glow 1.5s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+  50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+}
+
+/* 15th August India Independence Day Custom Theme Overrides */
+body.theme-aug15 {
+  --color-primary: #ff9933; /* Saffron Orange */
+  --color-primary-glow: rgba(255, 153, 51, 0.35);
+  --color-secondary: #d97706; /* Darker Orange */
+  --color-accent: #128807; /* Indian Green */
+  --color-accent-glow: rgba(18, 136, 7, 0.3);
+  --color-border-hover: rgba(255, 153, 51, 0.4);
+}
+
+body.theme-aug15 .gradient-text {
+  background: linear-gradient(135deg, #ff9933 0%, #ffffff 50%, #128807 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.theme-aug15 .btn-primary {
+  background: linear-gradient(135deg, #ff9933 0%, #d97706 100%);
+  box-shadow: 0 4px 15px rgba(255, 153, 51, 0.35);
+}
+
+body.theme-aug15 .btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(255, 153, 51, 0.5);
+}
+
+body.theme-aug15 .type-badge {
+  background: rgba(255, 153, 51, 0.15);
+  color: #ff9933;
+  border-color: #ff9933;
+}
+
+body.theme-aug15 .special-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 153, 51, 0.15);
+  color: #ff9933;
+  border: 1px solid rgba(255, 153, 51, 0.3);
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-left: 8px;
+  box-shadow: 0 0 10px rgba(255, 153, 51, 0.2);
+  animation: pulse-glow-saffron 1.5s infinite;
+}
+
+@keyframes pulse-glow-saffron {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 153, 51, 0.2); }
+  50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 153, 51, 0.4); }
+}
