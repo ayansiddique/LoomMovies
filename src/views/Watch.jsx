@@ -155,6 +155,12 @@ export default function Watch({ mediaId, mediaType, setView }) {
   useEffect(() => {
     let active = true;
     async function loadDirectStream() {
+      if (typeof mediaId === 'string' && mediaId.startsWith('youtube-')) {
+        setDirectStreamUrl(null);
+        setUseCustomPlayer(false);
+        setIsFetchingDirect(false);
+        return;
+      }
       setDirectStreamUrl(null);
       setUseCustomPlayer(false);
       setIsFetchingDirect(true);
@@ -205,6 +211,11 @@ export default function Watch({ mediaId, mediaType, setView }) {
 
   // Fetch Hindi dubbed stream from our internal api
   useEffect(() => {
+    if (typeof mediaId === 'string' && mediaId.startsWith('youtube-')) {
+      setHindiEmbedUrl(null);
+      setHindiSources([]);
+      return;
+    }
     if (SERVERS[activeServerIndex]?.id !== 'desidub') {
       setHindiEmbedUrl(null);
       setHindiSources([]);
@@ -470,17 +481,28 @@ export default function Watch({ mediaId, mediaType, setView }) {
       {/* Upper Panel: Player (Full-Width in Theater Mode) */}
       <div className="player-column">
         {/* Ad block info / Warning bar */}
-        <div className="ad-info-bar glass">
-          <AlertTriangle size={14} className="warning-yellow" />
-          <span>
-            <b>Tip:</b> Block popups by downloading our <b>Loom Extension</b> (link in the top bar). For <b>Hindi Audio</b>, click the Settings (⚙️/Audio) icon inside the player (Server 6 or Server 3) and switch the audio track!
-          </span>
-        </div>
+        {!mediaId.startsWith('youtube-') && (
+          <div className="ad-info-bar glass">
+            <AlertTriangle size={14} className="warning-yellow" />
+            <span>
+              <b>Tip:</b> Block popups by downloading our <b>Loom Extension</b> (link in the top bar). For <b>Hindi Audio</b>, click the Settings (⚙️/Audio) icon inside the player (Server 6 or Server 3) and switch the audio track!
+            </span>
+          </div>
+        )}
 
         {/* Video Player Box */}
         <div className="player-wrapper-outer">
           <div className="iframe-container glass">
-            {isPlayingTrailer && trailerUrl ? (
+            {mediaId.startsWith('youtube-') ? (
+              <iframe
+                src={`https://www.youtube.com/embed/${mediaId.replace('youtube-', '')}?autoplay=1`}
+                title={title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="video-iframe"
+              ></iframe>
+            ) : isPlayingTrailer && trailerUrl ? (
               <iframe
                 src={trailerUrl}
                 title={`${title} - Official Trailer`}
@@ -545,56 +567,58 @@ export default function Watch({ mediaId, mediaType, setView }) {
           </div>
 
           {/* Player controls (Toggles) */}
-          <div className="player-meta-controls">
-            <div className="stream-source-indicators" style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <span className="source-label">Source:</span>
-                {directStreamUrl && !isPlayingTrailer && (
+          {!mediaId.startsWith('youtube-') && (
+            <div className="player-meta-controls">
+              <div className="stream-source-indicators" style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span className="source-label">Source:</span>
+                  {directStreamUrl && !isPlayingTrailer && (
+                    <button 
+                      className={`source-badge ${useCustomPlayer ? 'active' : ''}`}
+                      onClick={() => setUseCustomPlayer(true)}
+                      style={{
+                        background: useCustomPlayer ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '',
+                        borderColor: useCustomPlayer ? '#10b981' : ''
+                      }}
+                      title="Play using the custom ad-free video player"
+                    >
+                      <Monitor size={12} /> ⚡ Ad-Free Player (Active)
+                    </button>
+                  )}
                   <button 
-                    className={`source-badge ${useCustomPlayer ? 'active' : ''}`}
-                    onClick={() => setUseCustomPlayer(true)}
-                    style={{
-                      background: useCustomPlayer ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '',
-                      borderColor: useCustomPlayer ? '#10b981' : ''
+                    className={`source-badge ${!isPlayingTrailer && !useCustomPlayer ? 'active' : ''}`}
+                    onClick={() => {
+                      setIsPlayingTrailer(false);
+                      setUseCustomPlayer(false);
                     }}
-                    title="Play using the custom ad-free video player"
+                    title="Play using standard third-party embed servers"
                   >
-                    <Monitor size={12} /> ⚡ Ad-Free Player (Active)
+                    <Monitor size={12} /> {directStreamUrl ? 'Iframe Servers' : 'Main Playback Server'}
                   </button>
-                )}
-                <button 
-                  className={`source-badge ${!isPlayingTrailer && !useCustomPlayer ? 'active' : ''}`}
-                  onClick={() => {
-                    setIsPlayingTrailer(false);
-                    setUseCustomPlayer(false);
-                  }}
-                  title="Play using standard third-party embed servers"
-                >
-                  <Monitor size={12} /> {directStreamUrl ? 'Iframe Servers' : 'Main Playback Server'}
-                </button>
-                {trailerUrl && (
-                  <button 
-                    className={`source-badge ${isPlayingTrailer ? 'active' : ''}`}
-                    onClick={() => setIsPlayingTrailer(true)}
-                  >
-                    <Play size={12} /> Official Trailer
-                  </button>
-                )}
-              </div>
+                  {trailerUrl && (
+                    <button 
+                      className={`source-badge ${isPlayingTrailer ? 'active' : ''}`}
+                      onClick={() => setIsPlayingTrailer(true)}
+                    >
+                      <Play size={12} /> Official Trailer
+                    </button>
+                  )}
+                </div>
 
-              <button 
-                className={`theater-toggle-btn ${isTheaterMode ? 'active' : ''}`}
-                onClick={() => setIsTheaterMode(!isTheaterMode)}
-                title="Toggle Theater Mode"
-                style={{ marginLeft: 'auto' }}
-              >
-                <Tv size={16} /> {isTheaterMode ? 'Standard Mode' : 'Theater Mode'}
-              </button>
+                <button 
+                  className={`theater-toggle-btn ${isTheaterMode ? 'active' : ''}`}
+                  onClick={() => setIsTheaterMode(!isTheaterMode)}
+                  title="Toggle Theater Mode"
+                  style={{ marginLeft: 'auto' }}
+                >
+                  <Tv size={16} /> {isTheaterMode ? 'Standard Mode' : 'Theater Mode'}
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Auto-Fallback Toast hint */}
-          {showFallbackHint && (
+          {showFallbackHint && !mediaId.startsWith('youtube-') && (
             <div className="player-loading-fallback glass glow-cyan animate-fade-in">
               <div className="fallback-content">
                 <Sparkles size={16} className="fallback-icon animate-pulse" />
@@ -607,7 +631,7 @@ export default function Watch({ mediaId, mediaType, setView }) {
           )}
 
           {/* Server Switcher Panel (Collapsible Accordion Selector) */}
-          {!isPlayingTrailer && !useCustomPlayer && (
+          {!isPlayingTrailer && !useCustomPlayer && !mediaId.startsWith('youtube-') && (
             <div className="server-switcher-bar glass animate-fade-in" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
               <div 
                 className="server-switcher-header" 

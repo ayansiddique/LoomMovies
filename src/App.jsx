@@ -203,6 +203,17 @@ export default function App() {
               </div>
             )}
 
+            {/* Category: Islamic Lectures */}
+            <div id="islamic">
+              <MovieRow 
+                title="⭐ Islamic Lectures & Bayans" 
+                itemsList={CURATED_LISTS.islamic} 
+                setView={setViewNavigate}
+                watchlist={watchlist}
+                onWatchlistToggle={handleWatchlistToggle}
+              />
+            </div>
+
             {/* Category: Marvel Universe */}
             <div id="marvel">
               <MovieRow 
