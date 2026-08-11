@@ -228,7 +228,46 @@ export default function Watch({ mediaId, mediaType, setView }) {
         const searchRes = await fetch(`/api/get-hindi-stream?action=search&q=${encodeURIComponent(queryTitle)}`);
         const searchData = await searchRes.json();
         
-        const bestMatch = searchData?.results?.[0];
+        // Smarter matching logic to select the correct Season slug
+        let bestMatch = null;
+        if (searchData?.results && searchData.results.length > 0) {
+          const results = searchData.results;
+          const currentSeason = activeEpisode.season;
+          
+          const getOrdinal = (num) => {
+            if (num === 1) return "1st";
+            if (num === 2) return "2nd";
+            if (num === 3) return "3rd";
+            return `${num}th`;
+          };
+
+          const ordinal = getOrdinal(currentSeason);
+          const seasonStr = `Season ${currentSeason}`;
+          const sStr = `S${currentSeason}`;
+
+          // Priority 1: Match the specific season keywords
+          bestMatch = results.find(res => {
+            const t = res.title.toLowerCase();
+            return t.includes(ordinal.toLowerCase()) || 
+                   t.includes(seasonStr.toLowerCase()) || 
+                   t.includes(sStr.toLowerCase());
+          });
+
+          // Priority 2: If we are looking for Season 1, look for the title that doesn't mention other seasons
+          if (!bestMatch && currentSeason === 1) {
+            const otherSeasonWords = ["2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "final season", "season 2", "season 3", "season 4", "season 5", "season 6", "season 7", "season 8"];
+            bestMatch = results.find(res => {
+              const t = res.title.toLowerCase();
+              return !otherSeasonWords.some(word => t.includes(word));
+            });
+          }
+
+          // Fallback to the first search result if no specific season matched
+          if (!bestMatch) {
+            bestMatch = results[0];
+          }
+        }
+
         if (!bestMatch?.slug) {
           throw new Error("Anime not found in Hindi dub database.");
         }
