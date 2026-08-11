@@ -1019,6 +1019,64 @@ export default function Watch({ mediaId, mediaType, setView }) {
           .theater-layout .iframe-container {
             aspect-ratio: 16/9; /* Reset cinema ratio to standard on tablets */
           }
+
+          /* YouTube Mobile Layout Style Overrides (Merged into 1024px for all mobile/tablet viewports) */
+          .watch-container {
+            padding: 0 0 40px !important; /* Full-width video player edge-to-edge */
+            margin-top: 0 !important;
+          }
+          .iframe-container {
+            border-radius: 0 !important; /* Square corners */
+            border: none !important;
+            box-shadow: none !important;
+          }
+          .ad-info-bar {
+            margin: 10px 4% 16px !important;
+          }
+          .player-meta-controls {
+            padding: 0 4% !important;
+          }
+          .server-switcher-bar {
+            margin: 14px 4% 0 !important;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 14px;
+          }
+          .watch-grid-details {
+            padding: 0 4% !important;
+          }
+          .server-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            width: 100%;
+            margin-top: 8px;
+          }
+          .server-btn-selector {
+            width: 100%;
+            text-align: center;
+            padding: 10px 6px;
+            font-size: 0.74rem;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+          }
+          .server-switcher-left {
+            width: 100%;
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .report-server-btn {
+            width: 100%;
+            justify-content: center;
+          }
+          .extension-actions {
+            flex-direction: column;
+          }
         }
 
         /* Fallback Alert Styling */
@@ -1316,65 +1374,7 @@ export default function Watch({ mediaId, mediaType, setView }) {
           box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
         }
         
-        @media (max-width: 768px) {
-          /* YouTube Mobile Layout Style Overrides */
-          .watch-container {
-            padding: 0 0 40px; /* Full-width video player edge-to-edge */
-            margin-top: 0;
-          }
-          .iframe-container {
-            border-radius: 0; /* Square corners */
-            border: none;
-            box-shadow: none;
-          }
-          .ad-info-bar {
-            margin: 10px 4% 16px;
-          }
-          .player-meta-controls {
-            padding: 0 4%;
-          }
-          .server-switcher-bar {
-            margin: 14px 4% 0;
-            flex-direction: column;
-            align-items: stretch;
-            gap: 14px;
-          }
-          .watch-grid-details {
-            padding: 0 4%;
-          }
-          .server-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            width: 100%;
-            margin-top: 8px;
-          }
-          .server-btn-selector {
-            width: 100%;
-            text-align: center;
-            padding: 10px 6px;
-            font-size: 0.74rem;
-            white-space: normal;
-            word-break: break-word;
-            line-height: 1.2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 40px;
-          }
-          .server-switcher-left {
-            width: 100%;
-            flex-direction: column;
-            align-items: flex-start;
-          }
-          .report-server-btn {
-            width: 100%;
-            justify-content: center;
-          }
-          .extension-actions {
-            flex-direction: column;
-          }
-        }
+
       `}</style>
 
       {/* Extension Steps Modal */}
