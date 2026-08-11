@@ -1062,7 +1062,21 @@ export default function Watch({ mediaId, mediaType, setView }) {
         /* Responsive */
         @media (max-width: 1024px) {
           .watch-grid-details {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr !important;
+            padding: 0 4% !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .details-pane-left {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .details-pane-left > * {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
           }
           .theater-layout .iframe-container {
             aspect-ratio: 16/9; /* Reset cinema ratio to standard on tablets */
