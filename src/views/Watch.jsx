@@ -1252,6 +1252,31 @@ export default function Watch({ mediaId, mediaType, setView }) {
         }
         
         @media (max-width: 768px) {
+          /* YouTube Mobile Layout Style Overrides */
+          .watch-container {
+            padding: 0 0 40px; /* Full-width video player edge-to-edge */
+            margin-top: 0;
+          }
+          .iframe-container {
+            border-radius: 0; /* Square corners */
+            border: none;
+            box-shadow: none;
+          }
+          .ad-info-bar {
+            margin: 10px 4% 16px;
+          }
+          .player-meta-controls {
+            padding: 0 4%;
+          }
+          .server-switcher-bar {
+            margin: 14px 4% 0;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 14px;
+          }
+          .watch-grid-details {
+            padding: 0 4%;
+          }
           .server-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -1280,11 +1305,6 @@ export default function Watch({ mediaId, mediaType, setView }) {
           .report-server-btn {
             width: 100%;
             justify-content: center;
-          }
-          .server-switcher-bar {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 14px;
           }
           .extension-actions {
             flex-direction: column;
