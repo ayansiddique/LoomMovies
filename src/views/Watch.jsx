@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Star, Calendar, Clock, RefreshCw, AlertTriangle, Monitor, Tv, Sparkles, ChevronDown } from 'lucide-react';
+import { Play, Star, Calendar, Clock, RefreshCw, AlertTriangle, Monitor, Tv, Sparkles, ChevronDown, FileText } from 'lucide-react';
 import { fetchMediaDetails, TMDB_CONFIG } from '../config/tmdb';
 import SidebarRecommendations from '../components/SidebarRecommendations';
 import EpisodeSelector from '../components/EpisodeSelector';
@@ -84,6 +84,7 @@ export default function Watch({ mediaId, mediaType, setView }) {
   });
   const [showFallbackHint, setShowFallbackHint] = useState(false);
   const [showExtensionSteps, setShowExtensionSteps] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   // Direct HLS/MP4 Stream States
   const [directStreamUrl, setDirectStreamUrl] = useState(null);
@@ -715,11 +716,58 @@ export default function Watch({ mediaId, mediaType, setView }) {
               <span className="meta-type-tag">{mediaType === 'tv' ? 'TV Series' : 'Movie'}</span>
             </div>
 
-            <p className="overview-text">{details.overview || 'No synopsis available for this title.'}</p>
-            
-            <div className="cast-row">
-              <span className="cast-label">Starring:</span>
-              <span className="cast-names">{cast}</span>
+            {/* Collapsible Description Accordion */}
+            <div className="description-accordion" style={{ marginTop: '14px' }}>
+              <button 
+                className="description-accordion-header"
+                onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  color: '#fff',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <FileText size={16} className="text-cyan" />
+                  {isDescriptionExpanded ? 'Hide Story & Cast' : 'Show Story & Cast'}
+                </span>
+                <ChevronDown 
+                  size={16} 
+                  style={{ 
+                    transform: isDescriptionExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.3s ease'
+                  }} 
+                />
+              </button>
+
+              <div 
+                className="description-accordion-content"
+                style={{
+                  maxHeight: isDescriptionExpanded ? '1000px' : '0px',
+                  overflow: 'hidden',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  opacity: isDescriptionExpanded ? 1 : 0
+                }}
+              >
+                <div style={{ paddingTop: '14px' }}>
+                  <p className="overview-text" style={{ margin: 0 }}>{details.overview || 'No synopsis available for this title.'}</p>
+                  
+                  <div className="cast-row" style={{ marginTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '10px' }}>
+                    <span className="cast-label">Starring:</span>
+                    <span className="cast-names">{cast}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1076,6 +1124,9 @@ export default function Watch({ mediaId, mediaType, setView }) {
           }
           .extension-actions {
             flex-direction: column;
+          }
+          .theater-toggle-btn {
+            display: none !important;
           }
         }
 
