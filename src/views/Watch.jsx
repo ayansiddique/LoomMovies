@@ -506,48 +506,51 @@ export default function Watch({ mediaId, mediaType, setView }) {
 
           {/* Player controls (Toggles) */}
           <div className="player-meta-controls">
-            <div className="stream-source-indicators">
-              <span className="source-label">Source:</span>
-              {directStreamUrl && !isPlayingTrailer && (
+            <div className="stream-source-indicators" style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span className="source-label">Source:</span>
+                {directStreamUrl && !isPlayingTrailer && (
+                  <button 
+                    className={`source-badge ${useCustomPlayer ? 'active' : ''}`}
+                    onClick={() => setUseCustomPlayer(true)}
+                    style={{
+                      background: useCustomPlayer ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '',
+                      borderColor: useCustomPlayer ? '#10b981' : ''
+                    }}
+                    title="Play using the custom ad-free video player"
+                  >
+                    <Monitor size={12} /> ⚡ Ad-Free Player (Active)
+                  </button>
+                )}
                 <button 
-                  className={`source-badge ${useCustomPlayer ? 'active' : ''}`}
-                  onClick={() => setUseCustomPlayer(true)}
-                  style={{
-                    background: useCustomPlayer ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '',
-                    borderColor: useCustomPlayer ? '#10b981' : ''
+                  className={`source-badge ${!isPlayingTrailer && !useCustomPlayer ? 'active' : ''}`}
+                  onClick={() => {
+                    setIsPlayingTrailer(false);
+                    setUseCustomPlayer(false);
                   }}
-                  title="Play using the custom ad-free video player"
+                  title="Play using standard third-party embed servers"
                 >
-                  <Monitor size={12} /> ⚡ Ad-Free Player (Active)
+                  <Monitor size={12} /> {directStreamUrl ? 'Iframe Servers' : 'Main Playback Server'}
                 </button>
-              )}
-              <button 
-                className={`source-badge ${!isPlayingTrailer && !useCustomPlayer ? 'active' : ''}`}
-                onClick={() => {
-                  setIsPlayingTrailer(false);
-                  setUseCustomPlayer(false);
-                }}
-                title="Play using standard third-party embed servers"
-              >
-                <Monitor size={12} /> {directStreamUrl ? 'Iframe Servers' : 'Main Playback Server'}
-              </button>
-              {trailerUrl && (
-                <button 
-                  className={`source-badge ${isPlayingTrailer ? 'active' : ''}`}
-                  onClick={() => setIsPlayingTrailer(true)}
-                >
-                  <Play size={12} /> Official Trailer
-                </button>
-              )}
-            </div>
+                {trailerUrl && (
+                  <button 
+                    className={`source-badge ${isPlayingTrailer ? 'active' : ''}`}
+                    onClick={() => setIsPlayingTrailer(true)}
+                  >
+                    <Play size={12} /> Official Trailer
+                  </button>
+                )}
+              </div>
 
-            <button 
-              className={`theater-toggle-btn ${isTheaterMode ? 'active' : ''}`}
-              onClick={() => setIsTheaterMode(!isTheaterMode)}
-              title="Toggle Theater Mode"
-            >
-              <Tv size={16} /> {isTheaterMode ? 'Standard Mode' : 'Theater Mode'}
-            </button>
+              <button 
+                className={`theater-toggle-btn ${isTheaterMode ? 'active' : ''}`}
+                onClick={() => setIsTheaterMode(!isTheaterMode)}
+                title="Toggle Theater Mode"
+                style={{ marginLeft: 'auto' }}
+              >
+                <Tv size={16} /> {isTheaterMode ? 'Standard Mode' : 'Theater Mode'}
+              </button>
+            </div>
           </div>
 
           {/* Auto-Fallback Toast hint */}
@@ -681,24 +684,7 @@ export default function Watch({ mediaId, mediaType, setView }) {
             </div>
           </div>
 
-          {/* Chrome Extension Download Card */}
-          <div className="chrome-extension-card glass glow-cyan animate-fade-in">
-            <div className="extension-header-row">
-              <span className="extension-badge animate-pulse">RECOMMENDED</span>
-              <h3 className="extension-title">🔴 Block Popup Ads with Loom Extension</h3>
-            </div>
-            <p className="extension-desc">
-              Bhai, agar aap chahte hain ke video play karte waqt koi bhi ad ya new tab open na ho, to hamari custom <b>Loom Extension</b> download karein. Ye video player ke popups ko 100% block kar deti hai!
-            </p>
-            <div className="extension-actions">
-              <a href="/loom-extension.zip" download className="btn-extension-download">
-                Download Loom Extension
-              </a>
-              <button className="btn-extension-steps" onClick={() => setShowExtensionSteps(true)}>
-                How to Install? (Easy Steps)
-              </button>
-            </div>
-          </div>
+
 
           {/* Episode list for TV shows */}
           {mediaType === 'tv' && (
