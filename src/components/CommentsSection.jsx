@@ -80,41 +80,21 @@ export default function CommentsSection({ mediaId, mediaType }) {
 
   return (
     <div className="comments-section glass animate-fade-in" style={{ padding: 0 }}>
-      {/* Clickable toggle header card (matches YouTube Mobile style) */}
+      {/* Clickable toggle header card */}
       <div 
         className="comments-drawer-header" 
         onClick={() => setIsCommentsExpanded(!isCommentsExpanded)}
-        style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', padding: '20px', gap: '8px', userSelect: 'none' }}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '16px 20px', userSelect: 'none' }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <h3 className="comments-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.05rem', fontWeight: '700' }}>
-            <MessageSquare size={18} className="comment-icon" /> 
-            Comments & Reviews ({comments.length})
-          </h3>
-          <ChevronDown 
-            size={16} 
-            className={`comments-chevron ${isCommentsExpanded ? 'rotated' : ''}`} 
-            style={{ color: 'var(--color-text-dim)', transition: 'transform 0.2s ease' }}
-          />
-        </div>
-        
-        {/* Latest comment preview (YouTube style) */}
-        {!isCommentsExpanded && comments.length > 0 && (
-          <div className="comments-preview-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', background: 'rgba(255,255,255,0.02)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
-            <div 
-              className="comment-avatar" 
-              style={{ width: '22px', height: '22px', fontSize: '0.65rem', margin: 0, backgroundColor: getAvatarColor(comments[0].username) }}
-            >
-              {comments[0].username.charAt(0).toUpperCase()}
-            </div>
-            <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
-              {comments[0].username}:
-            </span>
-            <p className="comment-preview-text" style={{ fontSize: '0.82rem', color: 'var(--color-text-dim)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '65%' }}>
-              {comments[0].text}
-            </p>
-          </div>
-        )}
+        <h3 className="comments-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.05rem', fontWeight: '700' }}>
+          <MessageSquare size={18} className="comment-icon" /> 
+          Comments & Reviews ({comments.length})
+        </h3>
+        <ChevronDown 
+          size={16} 
+          className={`comments-chevron ${isCommentsExpanded ? 'rotated' : ''}`} 
+          style={{ color: 'var(--color-text-dim)', transition: 'transform 0.2s ease' }}
+        />
       </div>
 
       {/* Expanded Comments Content */}

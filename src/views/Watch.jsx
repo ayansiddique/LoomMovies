@@ -574,7 +574,7 @@ export default function Watch({ mediaId, mediaType, setView }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                   <span className="server-label" style={{ margin: 0 }}>Select Server</span>
                   <span className="active-server-badge">
-                    Active: {SERVERS[activeServerIndex].name}
+                    Active: Server {activeServerIndex + 1}
                   </span>
                 </div>
                 <ChevronDown 
