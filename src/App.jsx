@@ -29,6 +29,7 @@ export default function App() {
     }
     return 'home';
   }); // 'prelaunch', 'home', 'watch', 'watchlist', 'search'
+  console.log("DEBUG RENDER: App view=" + view);
   const [activeMediaId, setActiveMediaId] = useState(null);
   const [activeMediaType, setActiveMediaType] = useState('movie');
   const [activeTheme, setActiveTheme] = useState(''); // '', 'aug14', 'aug15'
@@ -98,7 +99,7 @@ export default function App() {
   const setViewNavigate = (targetView, id = null, type = 'movie') => {
     setView(targetView);
     if (targetView === 'watch') {
-      setActiveMediaId(id);
+      setActiveMediaId(id ? String(id) : null);
       setActiveMediaType(type);
       window.scrollTo(0, 0);
     }

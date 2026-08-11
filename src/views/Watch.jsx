@@ -63,7 +63,8 @@ const SERVERS = [
   }
 ];
 
-export default function Watch({ mediaId, mediaType, setView }) {
+export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
+  const mediaId = String(rawMediaId);
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isPlayingTrailer, setIsPlayingTrailer] = useState(false);
