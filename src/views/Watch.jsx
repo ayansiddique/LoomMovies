@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Star, Calendar, Clock, RefreshCw, AlertTriangle, Monitor, Tv, Sparkles } from 'lucide-react';
+import { Play, Star, Calendar, Clock, RefreshCw, AlertTriangle, Monitor, Tv, Sparkles, ChevronDown } from 'lucide-react';
 import { fetchMediaDetails, TMDB_CONFIG } from '../config/tmdb';
 import SidebarRecommendations from '../components/SidebarRecommendations';
 import EpisodeSelector from '../components/EpisodeSelector';
@@ -72,6 +72,7 @@ export default function Watch({ mediaId, mediaType, setView }) {
   
   // Track active episode if TV show (defaults to Season 1, Episode 1)
   const [activeEpisode, setActiveEpisode] = useState({ season: 1, episode: 1 });
+  const [showServers, setShowServers] = useState(false);
 
   // Server Reporting, Fallback Timer and Extension UI States
   const [reportedServers, setReportedServers] = useState(() => {
@@ -562,36 +563,58 @@ export default function Watch({ mediaId, mediaType, setView }) {
             </div>
           )}
 
-          {/* Server Switcher Panel (Only visible when not playing trailer and custom player is not active) */}
+          {/* Server Switcher Panel (Collapsible Accordion Selector) */}
           {!isPlayingTrailer && !useCustomPlayer && (
-            <div className="server-switcher-bar glass animate-fade-in">
-              <div className="server-switcher-left">
-                <span className="server-label">Select Server:</span>
-                <div className="server-buttons">
-                  {SERVERS.map((server, idx) => {
-                    const isReported = isServerReported(idx);
-                    return (
-                      <button
-                        key={server.id}
-                        className={`server-btn-selector ${activeServerIndex === idx ? 'active' : ''} ${isReported ? 'server-reported' : ''}`}
-                        onClick={() => setActiveServerIndex(idx)}
-                        title={isReported ? "This server was reported as broken by users" : ""}
-                      >
-                        {server.name} {isReported && '⚠️'}
-                      </button>
-                    );
-                  })}
+            <div className="server-switcher-bar glass animate-fade-in" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+              <div 
+                className="server-switcher-header" 
+                onClick={() => setShowServers(!showServers)}
+                style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', userSelect: 'none' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span className="server-label" style={{ margin: 0 }}>Select Server</span>
+                  <span className="active-server-badge">
+                    Active: {SERVERS[activeServerIndex].name}
+                  </span>
                 </div>
+                <ChevronDown 
+                  size={16} 
+                  className={`server-chevron ${showServers ? 'rotated' : ''}`} 
+                />
               </div>
 
-              <button
-                className={`report-server-btn ${isServerReported(activeServerIndex) ? 'reported' : ''}`}
-                onClick={handleReportServer}
-                disabled={isServerReported(activeServerIndex)}
-              >
-                <AlertTriangle size={14} />
-                <span>{isServerReported(activeServerIndex) ? ' Reported Broken' : ' Report Server Offline'}</span>
-              </button>
+              {showServers && (
+                <div className="server-switcher-expanded animate-fade-in" style={{ width: '100%', marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div className="server-buttons">
+                    {SERVERS.map((server, idx) => {
+                      const isReported = isServerReported(idx);
+                      return (
+                        <button
+                          key={server.id}
+                          className={`server-btn-selector ${activeServerIndex === idx ? 'active' : ''} ${isReported ? 'server-reported' : ''}`}
+                          onClick={() => {
+                            setActiveServerIndex(idx);
+                            setShowServers(false); // auto-close after selection
+                          }}
+                          title={isReported ? "This server was reported as broken by users" : ""}
+                        >
+                          {server.name} {isReported && '⚠️'}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    className={`report-server-btn ${isServerReported(activeServerIndex) ? 'reported' : ''}`}
+                    onClick={handleReportServer}
+                    disabled={isServerReported(activeServerIndex)}
+                    style={{ alignSelf: 'flex-start' }}
+                  >
+                    <AlertTriangle size={14} />
+                    <span>{isServerReported(activeServerIndex) ? ' Reported Broken' : ' Report Server Offline'}</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -803,12 +826,29 @@ export default function Watch({ mediaId, mediaType, setView }) {
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 10px 16px;
+          padding: 14px 16px;
           border-radius: var(--border-radius-sm);
           margin-top: 14px;
           border: 1px solid rgba(255, 255, 255, 0.05);
           background: rgba(255, 255, 255, 0.02);
           flex-wrap: wrap;
+        }
+        .active-server-badge {
+          background: rgba(6, 182, 212, 0.1);
+          border: 1px solid rgba(6, 182, 212, 0.2);
+          color: var(--color-accent);
+          padding: 2px 10px;
+          border-radius: 100px;
+          font-size: 0.72rem;
+          font-weight: 700;
+          margin-left: 8px;
+        }
+        .server-chevron {
+          color: var(--color-text-dim);
+          transition: transform 0.2s ease;
+        }
+        .server-chevron.rotated {
+          transform: rotate(180deg);
         }
         .server-label {
           font-size: 0.8rem;

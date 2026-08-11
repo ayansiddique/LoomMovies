@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, Send, Trash2, MessageSquare } from 'lucide-react';
+import { Star, Send, Trash2, MessageSquare, ChevronDown } from 'lucide-react';
 
 export default function CommentsSection({ mediaId, mediaType }) {
   const storageKey = `loom_comments_${mediaType}_${mediaId}`;
@@ -9,6 +9,7 @@ export default function CommentsSection({ mediaId, mediaType }) {
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [showForm, setShowForm] = useState(false);
+  const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
 
   // Load comments from localStorage
   useEffect(() => {
@@ -78,144 +79,189 @@ export default function CommentsSection({ mediaId, mediaType }) {
   };
 
   return (
-    <div className="comments-section glass animate-fade-in">
-      <h3 className="comments-title">
-        <MessageSquare size={20} className="comment-icon" /> 
-        Comments & Reviews ({comments.length})
-      </h3>
-
-      {/* Add a Review toggle button */}
-      {!showForm ? (
-        <button 
-          onClick={() => setShowForm(true)} 
-          className="btn btn-primary toggle-review-btn"
-          style={{ marginBottom: '24px', width: '100%', padding: '12px' }}
-        >
-          Write a Review / Add Comment
-        </button>
-      ) : (
-        /* Review Write Form */
-        <form onSubmit={(e) => { handleSubmit(e); setShowForm(false); }} className="comment-form animate-fade-in">
-          <div className="form-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '8px' }}>
-            <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: 'white' }}>Share Your Review</h4>
-            <button 
-              type="button" 
-              onClick={() => setShowForm(false)} 
-              style={{ background: 'none', border: 'none', color: 'var(--color-text-dim)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: '600', textTransform: 'uppercase' }}
+    <div className="comments-section glass animate-fade-in" style={{ padding: 0 }}>
+      {/* Clickable toggle header card (matches YouTube Mobile style) */}
+      <div 
+        className="comments-drawer-header" 
+        onClick={() => setIsCommentsExpanded(!isCommentsExpanded)}
+        style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', padding: '20px', gap: '8px', userSelect: 'none' }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <h3 className="comments-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.05rem', fontWeight: '700' }}>
+            <MessageSquare size={18} className="comment-icon" /> 
+            Comments & Reviews ({comments.length})
+          </h3>
+          <ChevronDown 
+            size={16} 
+            className={`comments-chevron ${isCommentsExpanded ? 'rotated' : ''}`} 
+            style={{ color: 'var(--color-text-dim)', transition: 'transform 0.2s ease' }}
+          />
+        </div>
+        
+        {/* Latest comment preview (YouTube style) */}
+        {!isCommentsExpanded && comments.length > 0 && (
+          <div className="comments-preview-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', background: 'rgba(255,255,255,0.02)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
+            <div 
+              className="comment-avatar" 
+              style={{ width: '22px', height: '22px', fontSize: '0.65rem', margin: 0, backgroundColor: getAvatarColor(comments[0].username) }}
             >
-              Cancel
-            </button>
-          </div>
-          
-          <div className="form-row">
-            <input
-              type="text"
-              placeholder="Your name (e.g. MarvelFan)"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="comment-input name-input glass"
-              maxLength={25}
-            />
-            
-            {/* Star selector */}
-            <div className="star-selector">
-              <span className="star-label">Rating:</span>
-              <div className="stars">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    className="star-btn"
-                  >
-                    <Star 
-                      size={16} 
-                      fill={star <= (hoverRating || rating) ? "currentColor" : "none"}
-                      className={star <= (hoverRating || rating) ? "star-filled" : "star-empty"}
-                    />
-                  </button>
-                ))}
-              </div>
+              {comments[0].username.charAt(0).toUpperCase()}
             </div>
+            <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
+              {comments[0].username}:
+            </span>
+            <p className="comment-preview-text" style={{ fontSize: '0.82rem', color: 'var(--color-text-dim)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '65%' }}>
+              {comments[0].text}
+            </p>
           </div>
-
-          <div className="text-area-wrapper">
-            <textarea
-              placeholder="Share your thoughts about this movie/show..."
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              className="comment-textarea glass"
-              required
-              rows={3}
-              maxLength={500}
-            />
-            <button type="submit" className="btn btn-primary submit-comment-btn">
-              <Send size={16} /> Post Review
-            </button>
-          </div>
-        </form>
-      )}
-
-      {/* Comments List */}
-      <div className="comments-list">
-        {comments.length === 0 ? (
-          <p className="no-comments">No comments yet. Be the first to comment!</p>
-        ) : (
-          comments.map((comment) => (
-            <div key={comment.id} className="comment-card animate-fade-in">
-              <div 
-                className="comment-avatar" 
-                style={{ backgroundColor: getAvatarColor(comment.username) }}
-              >
-                {comment.username.charAt(0).toUpperCase()}
-              </div>
-
-              <div className="comment-body">
-                <div className="comment-header">
-                  <span className="comment-author">{comment.username}</span>
-                  <span className="comment-date">{comment.date}</span>
-                  
-                  {/* Stars display */}
-                  <div className="comment-stars">
-                    {Array(5).fill(0).map((_, i) => (
-                      <Star 
-                        key={i} 
-                        size={12} 
-                        fill={i < comment.rating ? "currentColor" : "none"} 
-                        className={i < comment.rating ? "star-filled" : "star-empty"}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Delete Button */}
-                  <button 
-                    className="delete-comment-btn"
-                    onClick={() => handleDelete(comment.id)}
-                    title="Delete review"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-
-                <p className="comment-text">{comment.text}</p>
-              </div>
-            </div>
-          ))
         )}
       </div>
 
+      {/* Expanded Comments Content */}
+      {isCommentsExpanded && (
+        <div className="comments-expanded-content animate-fade-in" style={{ padding: '0 20px 20px 20px' }}>
+          
+          {/* Add a Review toggle button */}
+          {!showForm ? (
+            <button 
+              onClick={() => setShowForm(true)} 
+              className="btn btn-primary toggle-review-btn"
+              style={{ marginBottom: '20px', width: '100%', padding: '12px' }}
+            >
+              Write a Review / Add Comment
+            </button>
+          ) : (
+            /* Review Write Form */
+            <form onSubmit={(e) => { handleSubmit(e); setShowForm(false); }} className="comment-form animate-fade-in">
+              <div className="form-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '8px' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: 'white' }}>Share Your Review</h4>
+                <button 
+                  type="button" 
+                  onClick={() => setShowForm(false)} 
+                  style={{ background: 'none', border: 'none', color: 'var(--color-text-dim)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: '600', textTransform: 'uppercase' }}
+                >
+                  Cancel
+                </button>
+              </div>
+              
+              <div className="form-row">
+                <input
+                  type="text"
+                  placeholder="Your name (e.g. MarvelFan)"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="comment-input name-input glass"
+                  maxLength={25}
+                />
+                
+                {/* Star selector */}
+                <div className="star-selector">
+                  <span className="star-label">Rating:</span>
+                  <div className="stars">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        className="star-btn"
+                      >
+                        <Star 
+                          size={16} 
+                          fill={star <= (hoverRating || rating) ? "currentColor" : "none"}
+                          className={star <= (hoverRating || rating) ? "star-filled" : "star-empty"}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-area-wrapper">
+                <textarea
+                  placeholder="Share your thoughts about this movie/show..."
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  className="comment-textarea glass"
+                  required
+                  rows={3}
+                  maxLength={500}
+                />
+                <button type="submit" className="btn btn-primary submit-comment-btn">
+                  <Send size={16} /> Post Review
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Comments List */}
+          <div className="comments-list">
+            {comments.length === 0 ? (
+              <p className="no-comments">No comments yet. Be the first to comment!</p>
+            ) : (
+              comments.map((comment) => (
+                <div key={comment.id} className="comment-card animate-fade-in">
+                  <div 
+                    className="comment-avatar" 
+                    style={{ backgroundColor: getAvatarColor(comment.username) }}
+                  >
+                    {comment.username.charAt(0).toUpperCase()}
+                  </div>
+
+                  <div className="comment-body">
+                    <div className="comment-header">
+                      <span className="comment-author">{comment.username}</span>
+                      <span className="comment-date">{comment.date}</span>
+                      
+                      {/* Stars display */}
+                      <div className="comment-stars">
+                        {Array(5).fill(0).map((_, i) => (
+                          <Star 
+                            key={i} 
+                            size={12} 
+                            fill={i < comment.rating ? "currentColor" : "none"} 
+                            className={i < comment.rating ? "star-filled" : "star-empty"}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Delete Button */}
+                      <button 
+                        className="delete-comment-btn"
+                        onClick={() => handleDelete(comment.id)}
+                        title="Delete review"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+
+                    <p className="comment-text">{comment.text}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
       <style>{`
         .comments-section {
-          padding: 24px;
           border-radius: var(--border-radius-md);
           margin-top: 30px;
+          overflow: hidden;
+        }
+        .comments-drawer-header {
+          transition: background 0.2s ease;
+        }
+        .comments-drawer-header:hover {
+          background: rgba(255, 255, 255, 0.02);
+        }
+        .comments-chevron.rotated {
+          transform: rotate(180deg);
         }
         .comments-title {
           font-family: var(--font-secondary);
-          font-size: 1.2rem;
-          margin-bottom: 20px;
           display: flex;
           align-items: center;
           gap: 8px;
