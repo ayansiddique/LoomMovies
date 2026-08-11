@@ -631,7 +631,7 @@ export default function Watch({ mediaId, mediaType, setView }) {
           )}
 
           {/* Server Switcher Panel (Collapsible Accordion Selector) */}
-          {!isPlayingTrailer && !useCustomPlayer && !mediaId.startsWith('youtube-') && (
+          {!isPlayingTrailer && !mediaId.startsWith('youtube-') && (
             <div className="server-switcher-bar glass animate-fade-in" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
               <div 
                 className="server-switcher-header" 
@@ -641,7 +641,7 @@ export default function Watch({ mediaId, mediaType, setView }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                   <span className="server-label" style={{ margin: 0 }}>Select Server</span>
                   <span className="active-server-badge">
-                    Active: Server {activeServerIndex + 1}
+                    Active: {useCustomPlayer ? '⚡ Ad-Free Player' : `Server ${activeServerIndex + 1}`}
                   </span>
                 </div>
                 <ChevronDown 
@@ -658,9 +658,10 @@ export default function Watch({ mediaId, mediaType, setView }) {
                       return (
                         <button
                           key={server.id}
-                          className={`server-btn-selector ${activeServerIndex === idx ? 'active' : ''} ${isReported ? 'server-reported' : ''}`}
+                          className={`server-btn-selector ${!useCustomPlayer && activeServerIndex === idx ? 'active' : ''} ${isReported ? 'server-reported' : ''}`}
                           onClick={() => {
                             setActiveServerIndex(idx);
+                            setUseCustomPlayer(false); // Switch to the selected server iframe!
                             setShowServers(false); // auto-close after selection
                           }}
                           title={isReported ? "This server was reported as broken by users" : ""}
