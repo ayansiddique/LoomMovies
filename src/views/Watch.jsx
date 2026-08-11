@@ -1062,18 +1062,20 @@ export default function Watch({ mediaId, mediaType, setView }) {
         /* Responsive */
         @media (max-width: 1024px) {
           .watch-grid-details {
-            grid-template-columns: 1fr !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 24px !important;
             padding: 0 4% !important;
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;
           }
-          .details-pane-left {
+          .details-pane-left, .sidebar-pane-right {
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;
           }
-          .details-pane-left > * {
+          .details-pane-left > *, .sidebar-pane-right > * {
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;
