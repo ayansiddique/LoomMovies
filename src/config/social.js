@@ -1,7 +1,7 @@
 export const SOCIAL_LINKS = {
-  whatsapp: '#', // Placeholder, user will provide actual links
-  facebook: '#',
+  whatsapp: 'https://whatsapp.com/channel/0029Vb7whkfAojYs1uGiaL1r', // Loom Studio Company WhatsApp Channel
+  facebook: 'https://www.facebook.com/loommoviesofficial', // Loom Movies Official Facebook
   instagram: '#',
-  company: '#',
-  official: '#'
+  company: 'https://www.facebook.com/officialloomstudio', // Loom Studio Company Page Facebook
+  official: 'https://whatsapp.com/channel/0029Vb7whkfAojYs1uGiaL1r' // Loom Studio Company WhatsApp Channel
 };

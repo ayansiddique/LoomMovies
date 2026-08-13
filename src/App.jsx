@@ -6,8 +6,8 @@ import MovieRow from './components/MovieRow';
 import MovieCard from './components/MovieCard';
 import Watch from './views/Watch';
 import PreLaunch from './views/PreLaunch';
-import { CURATED_LISTS, TMDB_CONFIG } from './config/tmdb';
-import { Heart, Search, Play, RefreshCw, Film, Sparkles } from 'lucide-react';
+import { CURATED_LISTS, TMDB_CONFIG, BANNED_KEYWORDS } from './config/tmdb';
+import { Heart, Search, Play, RefreshCw, Film, Sparkles, AlertTriangle } from 'lucide-react';
 
 export default function App() {
   const [view, setView] = useState(() => {
@@ -121,17 +121,133 @@ export default function App() {
     setSearchQuery(query);
     setView('search');
     setSearchLoading(true);
+    
+    // Check for banned keywords
+    const queryLower = query.toLowerCase();
+    const isBanned = BANNED_KEYWORDS.some(word => queryLower.includes(word));
+    
+    if (isBanned) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch(
-        `${TMDB_CONFIG.BASE_URL}/search/multi?api_key=${TMDB_CONFIG.API_KEY}&query=${encodeURIComponent(query)}`
-      );
-      const data = await res.json();
-      
-      // Filter out actors/directors, only include movies/tv with poster/backdrop paths
-      const filtered = (data.results || []).filter(
-        item => (item.media_type === 'movie' || item.media_type === 'tv') && (item.poster_path || item.backdrop_path)
-      );
-      setSearchResults(filtered);
+      // 1. Search locally in our custom Islamic list
+      const localMatches = (CURATED_LISTS.islamic || []).filter(
+        item => 
+          (item.title && item.title.toLowerCase().includes(queryLower)) ||
+          (item.overview && item.overview.toLowerCase().includes(queryLower))
+      ).map(item => ({
+        ...item,
+        media_type: 'movie' // ensure it navigates to the movie custom player
+      }));
+
+      // Check if this is a language-based query (e.g. "hindi movies", "korean drama", etc.)
+      let langCode = null;
+      let discoverType = 'multi'; // 'movie', 'tv', 'multi'
+      const cleanQuery = queryLower.trim().replace(/\s+/g, ' ');
+
+      if (/^(hindi|hindi\s+movies?|hindi\s+films?)$/.test(cleanQuery)) {
+        langCode = 'hi';
+        discoverType = 'multi';
+      } else if (/^(english|english\s+movies?|english\s+films?)$/.test(cleanQuery)) {
+        langCode = 'en';
+        discoverType = 'multi';
+      } else if (/^(punjabi|punjabi\s+movies?|punjabi\s+films?)$/.test(cleanQuery)) {
+        langCode = 'pa';
+        discoverType = 'movie';
+      } else if (/^(korean|korean\s+dramas?|kdramas?|korean\s+series)$/.test(cleanQuery)) {
+        langCode = 'ko';
+        discoverType = 'tv';
+      } else if (/^(turkish|turkish\s+dramas?|turkish\s+series)$/.test(cleanQuery)) {
+        langCode = 'tr';
+        discoverType = 'tv';
+      } else if (/^(chinese|chinese\s+dramas?|cdramas?)$/.test(cleanQuery)) {
+        langCode = 'zh';
+        discoverType = 'tv';
+      } else if (/^(japanese|anime)$/.test(cleanQuery)) {
+        langCode = 'ja';
+        discoverType = 'multi';
+      } else if (/^(urdu|urdu\s+movies?|urdu\s+films?)$/.test(cleanQuery)) {
+        langCode = 'ur';
+        discoverType = 'multi';
+      }
+
+      let filtered = [];
+      if (langCode) {
+        let fetchPromises = [];
+        if (discoverType === 'movie' || discoverType === 'multi') {
+          fetchPromises.push(
+            fetch(
+              `${TMDB_CONFIG.BASE_URL}/discover/movie?api_key=${TMDB_CONFIG.API_KEY}&with_original_language=${langCode}&sort_by=popularity.desc`
+            )
+              .then(res => res.json())
+              .then(data => (data.results || []).map(item => ({ ...item, media_type: 'movie' })))
+          );
+        }
+        if (discoverType === 'tv' || discoverType === 'multi') {
+          fetchPromises.push(
+            fetch(
+              `${TMDB_CONFIG.BASE_URL}/discover/tv?api_key=${TMDB_CONFIG.API_KEY}&with_original_language=${langCode}&sort_by=popularity.desc`
+            )
+              .then(res => res.json())
+              .then(data => (data.results || []).map(item => ({ ...item, media_type: 'tv' })))
+          );
+        }
+
+        const responses = await Promise.all(fetchPromises);
+        let combined = [];
+        if (responses.length === 2) {
+          const [movies, tvs] = responses;
+          const maxLen = Math.max(movies.length, tvs.length);
+          for (let i = 0; i < maxLen; i++) {
+            if (movies[i]) combined.push(movies[i]);
+            if (tvs[i]) combined.push(tvs[i]);
+          }
+        } else {
+          combined = responses[0] || [];
+        }
+
+        filtered = combined.filter(item => {
+          if (item.adult) return false;
+          const hasImages = item.poster_path || item.backdrop_path;
+          if (!hasImages) return false;
+
+          const titleLower = (item.title || item.name || '').toLowerCase();
+          const overviewLower = (item.overview || '').toLowerCase();
+          const hasBannedKeyword = BANNED_KEYWORDS.some(word => 
+            titleLower.includes(word) || overviewLower.includes(word)
+          );
+          return !hasBannedKeyword;
+        });
+      } else {
+        // 2. Search on TMDB normally
+        const res = await fetch(
+          `${TMDB_CONFIG.BASE_URL}/search/multi?api_key=${TMDB_CONFIG.API_KEY}&query=${encodeURIComponent(query)}`
+        );
+        const data = await res.json();
+        
+        // Filter out actors/directors, adult content, and banned keywords in title/overview
+        filtered = (data.results || []).filter(item => {
+          if (item.adult) return false;
+          
+          const isMovieOrTv = item.media_type === 'movie' || item.media_type === 'tv';
+          const hasImages = item.poster_path || item.backdrop_path;
+          if (!isMovieOrTv || !hasImages) return false;
+          
+          const titleLower = (item.title || item.name || '').toLowerCase();
+          const overviewLower = (item.overview || '').toLowerCase();
+          const hasBannedKeyword = BANNED_KEYWORDS.some(word => 
+            titleLower.includes(word) || overviewLower.includes(word)
+          );
+          
+          return !hasBannedKeyword;
+        });
+      }
+
+      // 3. Combine results (local custom matches first)
+      setSearchResults([...localMatches, ...filtered]);
     } catch (e) {
       console.error('Search error:', e);
       setSearchResults([]);

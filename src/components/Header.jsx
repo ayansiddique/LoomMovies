@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Film, Heart, Home, Menu, X, Play, Share2 } from 'lucide-react';
-import { TMDB_CONFIG } from '../config/tmdb';
+import { TMDB_CONFIG, BANNED_KEYWORDS } from '../config/tmdb';
 import { SOCIAL_LINKS } from '../config/social';
 
 export default function Header({ currentView, setView, watchlist, onSearchSubmit, activeTheme }) {
@@ -33,15 +33,39 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
       setSuggestions([]);
       return;
     }
+    
+    // Check for banned keywords
+    const queryLower = searchVal.toLowerCase();
+    const isBanned = BANNED_KEYWORDS.some(word => queryLower.includes(word));
+    if (isBanned) {
+      setSuggestions([]);
+      return;
+    }
+
     const delayDebounce = setTimeout(async () => {
       try {
         const res = await fetch(
           `${TMDB_CONFIG.BASE_URL}/search/multi?api_key=${TMDB_CONFIG.API_KEY}&query=${encodeURIComponent(searchVal)}`
         );
         const data = await res.json();
-        // filter only movies/tv that have backdrop/poster
+        
+        // Filter out adult content and banned keywords
         const filtered = (data.results || [])
-          .filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path)
+          .filter(item => {
+            if (item.adult) return false;
+            
+            const isMovieOrTv = item.media_type === 'movie' || item.media_type === 'tv';
+            const hasPoster = item.poster_path;
+            if (!isMovieOrTv || !hasPoster) return false;
+            
+            const titleLower = (item.title || item.name || '').toLowerCase();
+            const overviewLower = (item.overview || '').toLowerCase();
+            const hasBanned = BANNED_KEYWORDS.some(word => 
+              titleLower.includes(word) || overviewLower.includes(word)
+            );
+            
+            return !hasBanned;
+          })
           .slice(0, 5);
         setSuggestions(filtered);
       } catch (err) {
@@ -214,18 +238,49 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
         <div className="mobile-dropdown glass animate-fade-in">
           <nav className="mobile-nav">
             {/* Mobile Search Input */}
-            <form onSubmit={handleSearchSubmitLocal} className="mobile-search-form">
-              <input
-                type="text"
-                placeholder="Search movies, anime, dramas..."
-                value={searchVal}
-                onChange={handleSearchChange}
-                className="mobile-search-input glass"
-              />
-              <button type="submit" className="mobile-search-btn">
-                <Search size={16} />
-              </button>
-            </form>
+            <div className="mobile-search-wrapper" style={{ position: 'relative', width: '100%' }}>
+              <form onSubmit={handleSearchSubmitLocal} className="mobile-search-form" style={{ marginBottom: 0 }}>
+                <input
+                  type="text"
+                  placeholder="Search movies, anime, dramas..."
+                  value={searchVal}
+                  onChange={handleSearchChange}
+                  onFocus={() => setShowSuggestions(true)}
+                  className="mobile-search-input glass"
+                />
+                <button type="submit" className="mobile-search-btn">
+                  <Search size={16} />
+                </button>
+              </form>
+
+              {/* Suggestions Dropdown for Mobile */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="search-suggestions mobile-search-suggestions glass animate-fade-in" style={{ position: 'absolute', top: 'calc(100% + 5px)', left: 0, right: 0, zIndex: 1200, background: 'rgba(9, 9, 12, 0.99)', maxHeight: '250px', overflowY: 'auto' }}>
+                  {suggestions.map((item) => (
+                    <div 
+                      key={item.id} 
+                      className="suggestion-item" 
+                      onClick={() => handleSuggestionClick(item)}
+                    >
+                      <img 
+                        src={TMDB_CONFIG.posterUrl(item.poster_path)} 
+                        alt={item.title || item.name} 
+                        className="suggestion-poster"
+                      />
+                      <div className="suggestion-details">
+                        <div className="suggestion-title">{item.title || item.name}</div>
+                        <div className="suggestion-meta">
+                          <span className="suggestion-type">{item.media_type === 'movie' ? 'Movie' : 'TV Show'}</span>
+                          {item.release_date && <span className="suggestion-year">{item.release_date.split('-')[0]}</span>}
+                          {item.first_air_date && <span className="suggestion-year">{item.first_air_date.split('-')[0]}</span>}
+                        </div>
+                      </div>
+                      <Play size={14} className="suggestion-play" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             
             <button 
               className={`mobile-nav-link ${currentView === 'home' && !searchVal ? 'active' : ''}`}
@@ -477,8 +532,14 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
           top: 70px;
           left: 0;
           right: 0;
-          padding: 20px;
+          padding: 24px 20px 30px;
           border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+          background: rgba(9, 9, 12, 0.99) !important;
+          backdrop-filter: blur(20px) !important;
+          -webkit-backdrop-filter: blur(20px) !important;
+          border: 1px solid var(--color-border);
+          border-top: none;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.95);
         }
         .mobile-nav {
           display: flex;

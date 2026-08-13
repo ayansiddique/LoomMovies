@@ -93,53 +93,46 @@ export default function PreLaunch({ onBypass }) {
           <div className="prelaunch-divider"></div>
 
           {/* Main Community Channels */}
-          <h3 className="channels-section-title">Join Our Community</h3>
-          <div className="social-row">
-            {/* WhatsApp */}
-            <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" className="s-btn whatsapp-btn">
-              <svg className="s-icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12.004 2C6.48 2 2 6.48 2 12.004c0 1.908.533 3.69 1.464 5.215L2 22l4.914-1.288c1.477.804 3.16 1.293 4.935 1.293 5.524 0 10.004-4.48 10.004-10.004C21.853 6.48 17.528 2 12.004 2zm5.728 14.168c-.24.672-1.2 1.224-1.656 1.272-.456.048-.96.264-2.928-.528-2.52-1.02-4.14-3.6-4.26-3.768-.12-.168-1.008-1.344-1.008-2.568 0-1.224.636-1.824.864-2.064.228-.24.504-.3.672-.3.168 0 .336 0 .48.012.156.012.36-.048.564.444.204.504.72 1.752.78 1.884.06.12.108.264.024.432-.084.168-.168.276-.288.42-.12.144-.252.324-.36.432-.12.12-.24.252-.108.48.132.228.588.972 1.26 1.572.864.768 1.596 1.008 1.824 1.128.228.12.36.096.492-.048.132-.144.564-.66.72-.888.156-.228.312-.192.528-.108.216.084 1.368.648 1.608.768.24.12.4.18.456.288.06.096.06.564-.18 1.236z"/>
-              </svg>
-              <span>WhatsApp</span>
+          <h3 className="channels-section-title">Official Channels & Community</h3>
+          <div className="community-links-grid">
+            {/* Loom Movies Official Facebook */}
+            <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className="community-link-card facebook-card glass">
+              <div className="link-icon-box fb-icon-bg">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="brand-svg">
+                  <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/>
+                </svg>
+              </div>
+              <div className="link-content">
+                <h4>Loom Movies Facebook</h4>
+                <p>Official page for trailers & announcements</p>
+              </div>
+              <span className="action-tag">Join</span>
             </a>
 
-            {/* Facebook */}
-            <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className="s-btn facebook-btn">
-              <svg className="s-icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/>
-              </svg>
-              <span>Facebook</span>
+            {/* Loom Studio WhatsApp Channel */}
+            <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" className="community-link-card whatsapp-card glass">
+              <div className="link-icon-box wa-icon-bg">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="brand-svg">
+                  <path d="M12.004 2C6.48 2 2 6.48 2 12.004c0 1.908.533 3.69 1.464 5.215L2 22l4.914-1.288c1.477.804 3.16 1.293 4.935 1.293 5.524 0 10.004-4.48 10.004-10.004C21.853 6.48 17.528 2 12.004 2zm5.728 14.168c-.24.672-1.2 1.224-1.656 1.272-.456.048-.96.264-2.928-.528-2.52-1.02-4.14-3.6-4.26-3.768-.12-.168-1.008-1.344-1.008-2.568 0-1.224.636-1.824.864-2.064.228-.24.504-.3.672-.3.168 0 .336 0 .48.012.156.012.36-.048.564.444.204.504.72 1.752.78 1.884.06.12.108.264.024.432-.084.168-.168.276-.288.42-.12.144-.252.324-.36.432-.12.12-.24.252-.108.48.132.228.588.972 1.26 1.572.864.768 1.596 1.008 1.824 1.128.228.12.36.096.492-.048.132-.144.564-.66.72-.888.156-.228.312-.192.528-.108.216.084 1.368.648 1.608.768.24.12.4.18.456.288.06.096.06.564-.18 1.236z"/>
+                </svg>
+              </div>
+              <div className="link-content">
+                <h4>Loom Studio WhatsApp</h4>
+                <p>Company channel for updates & status</p>
+              </div>
+              <span className="action-tag">Connect</span>
             </a>
 
-            {/* Instagram */}
-            <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="s-btn instagram-btn">
-              <svg className="s-icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-              </svg>
-              <span>Instagram</span>
-            </a>
-          </div>
-
-          {/* Sub Channels Grid */}
-          <div className="sub-row">
-            <a href={SOCIAL_LINKS.company} target="_blank" rel="noopener noreferrer" className="sub-card glass">
-              <div className="sub-i-box cyan-bg-dim">
-                <Building2 size={18} />
+            {/* Loom Studio Facebook (Company) */}
+            <a href={SOCIAL_LINKS.company} target="_blank" rel="noopener noreferrer" className="community-link-card studio-card glass">
+              <div className="link-icon-box studio-icon-bg">
+                <Building2 size={20} />
               </div>
-              <div className="sub-text">
-                <h4>Company Channel</h4>
-                <p>Corporate status & customer help</p>
+              <div className="link-content">
+                <h4>Loom Studio Company</h4>
+                <p>Official corporate status page</p>
               </div>
-            </a>
-
-            <a href={SOCIAL_LINKS.official} target="_blank" rel="noopener noreferrer" className="sub-card glass">
-              <div className="sub-i-box purple-bg-dim">
-                <Megaphone size={18} />
-              </div>
-              <div className="sub-text">
-                <h4>Official News</h4>
-                <p>Instant announcements & alerts</p>
-              </div>
+              <span className="action-tag">Visit</span>
             </a>
           </div>
         </div>
@@ -347,103 +340,111 @@ export default function PreLaunch({ onBypass }) {
           margin-bottom: 18px;
         }
 
-        /* Social actions */
-        .social-row {
+        /* Unified Community Links Grid */
+        .community-links-grid {
           display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 16px;
-          margin-bottom: 28px;
-          flex-wrap: wrap;
-        }
-        .s-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 10px 18px;
-          border-radius: var(--border-radius-sm);
-          text-decoration: none;
-          font-size: 0.9rem;
-          font-weight: 600;
-          color: var(--color-text-muted);
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          transition: var(--transition-smooth);
-        }
-        .s-btn:hover {
-          color: #fff;
-          transform: translateY(-2px);
-        }
-        .s-icon {
-          width: 18px;
-          height: 18px;
-        }
-
-        .whatsapp-btn:hover {
-          background: #25D366;
-          border-color: #25D366;
-          box-shadow: 0 0 15px rgba(37, 211, 102, 0.4);
-        }
-        .facebook-btn:hover {
-          background: #1877F2;
-          border-color: #1877F2;
-          box-shadow: 0 0 15px rgba(24, 119, 242, 0.4);
-        }
-        .instagram-btn:hover {
-          background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-          border-color: #cc2366;
-          box-shadow: 0 0 15px rgba(204, 35, 102, 0.4);
-        }
-
-        /* Sub channels */
-        .sub-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 16px;
-        }
-        .sub-card {
-          display: flex;
-          align-items: center;
+          flex-direction: column;
           gap: 12px;
-          padding: 14px;
+          margin-top: 10px;
+        }
+
+        .community-link-card {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 16px;
           border-radius: var(--border-radius-md);
           text-decoration: none;
           text-align: left;
-          transition: var(--transition-smooth);
-          border: 1px solid var(--color-border);
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s, border-color 0.25s;
+          position: relative;
+          overflow: hidden;
         }
-        .sub-card:hover {
+
+        .community-link-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 4px;
+          height: 100%;
+          transition: var(--transition-smooth);
+        }
+
+        .community-link-card:hover {
           transform: translateY(-2px);
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba(255, 255, 255, 0.06);
           border-color: rgba(255, 255, 255, 0.15);
         }
-        .sub-i-box {
-          width: 36px;
-          height: 36px;
-          border-radius: 8px;
+
+        /* Specific Brand Themes */
+        .facebook-card::before { background: #1877F2; }
+        .facebook-card:hover { box-shadow: 0 4px 20px rgba(24, 119, 242, 0.15); }
+        .fb-icon-bg { background: rgba(24, 119, 242, 0.12); color: #1877F2; }
+        .facebook-card:hover .fb-icon-bg { background: #1877F2; color: #fff; }
+
+        .whatsapp-card::before { background: #25D366; }
+        .whatsapp-card:hover { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.15); }
+        .wa-icon-bg { background: rgba(37, 211, 102, 0.12); color: #25D366; }
+        .whatsapp-card:hover .wa-icon-bg { background: #25D366; color: #fff; }
+
+        .studio-card::before { background: var(--color-accent); }
+        .studio-card:hover { box-shadow: 0 4px 20px rgba(6, 182, 212, 0.15); }
+        .studio-icon-bg { background: rgba(6, 182, 212, 0.12); color: var(--color-accent); }
+        .studio-card:hover .studio-icon-bg { background: var(--color-accent); color: #000; }
+
+        .link-icon-box {
+          width: 44px;
+          height: 44px;
+          border-radius: 10px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          transition: var(--transition-smooth);
         }
-        .cyan-bg-dim {
-          background: rgba(6, 182, 212, 0.12);
-          color: var(--color-accent);
+
+        .brand-svg {
+          width: 22px;
+          height: 22px;
         }
-        .purple-bg-dim {
-          background: rgba(124, 58, 237, 0.12);
-          color: var(--color-primary);
+
+        .link-content {
+          flex: 1;
         }
-        .sub-text h4 {
+
+        .link-content h4 {
           font-family: var(--font-secondary);
-          font-size: 0.9rem;
+          font-size: 0.95rem;
+          font-weight: 700;
           color: var(--color-text-main);
           margin-bottom: 2px;
         }
-        .sub-text p {
-          font-size: 0.72rem;
+
+        .link-content p {
+          font-size: 0.76rem;
           color: var(--color-text-muted);
-          line-height: 1.3;
+          line-height: 1.4;
+        }
+
+        .action-tag {
+          font-size: 0.72rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          padding: 4px 10px;
+          border-radius: 100px;
+          background: rgba(255, 255, 255, 0.05);
+          color: var(--color-text-dim);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          transition: var(--transition-smooth);
+        }
+
+        .community-link-card:hover .action-tag {
+          background: rgba(255, 255, 255, 0.15);
+          color: #fff;
         }
 
         .prelaunch-footer {

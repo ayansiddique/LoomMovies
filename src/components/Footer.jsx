@@ -38,16 +38,6 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Disclaimer / Info */}
-        <div className="footer-links-col">
-          <h4>Legal & Tech</h4>
-          <ul>
-            <li><span className="footer-static-link">React.js Frontend</span></li>
-            <li><span className="footer-static-link">TMDB API Database</span></li>
-            <li><span className="footer-static-link">Public Embed Player</span></li>
-            <li><span className="footer-static-link">LocalStorage Synced</span></li>
-          </ul>
-        </div>
       </div>
 
       <div className="footer-bottom">
@@ -68,7 +58,7 @@ export default function Footer() {
         }
         .footer-content {
           display: grid;
-          grid-template-columns: 2fr 1fr 1fr 1fr;
+          grid-template-columns: 2fr 1fr 1fr;
           gap: 40px;
           margin-bottom: 40px;
         }
@@ -151,8 +141,16 @@ export default function Footer() {
         }
         @media (max-width: 768px) {
           .footer-content {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 30px;
+          }
+          .footer-brand-col {
+            grid-column: 1 / -1;
+            text-align: center;
+            align-items: center;
+          }
+          .footer-brand-col .footer-desc {
+            margin: 0 auto;
           }
           .footer {
             padding: 40px 5% 20px;

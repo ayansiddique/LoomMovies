@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Star, Calendar, Clock, RefreshCw, AlertTriangle, Monitor, Tv, Sparkles, ChevronDown, FileText } from 'lucide-react';
-import { fetchMediaDetails, TMDB_CONFIG } from '../config/tmdb';
+import { fetchMediaDetails, TMDB_CONFIG, BANNED_KEYWORDS } from '../config/tmdb';
 import SidebarRecommendations from '../components/SidebarRecommendations';
 import EpisodeSelector from '../components/EpisodeSelector';
 import CommentsSection from '../components/CommentsSection';
@@ -134,6 +134,25 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
       setLoading(true);
       try {
         const data = await fetchMediaDetails(mediaId, mediaType);
+        
+        // Content protection guard
+        if (data) {
+          const titleLower = (data.title || data.name || '').toLowerCase();
+          const overviewLower = (data.overview || '').toLowerCase();
+          const isAdult = data.adult === true;
+          const hasBanned = BANNED_KEYWORDS.some(word => 
+            titleLower.includes(word) || overviewLower.includes(word)
+          );
+          
+          if (isAdult || hasBanned) {
+            if (active) {
+              setDetails(null); // This will show the watch-error component
+              setLoading(false);
+            }
+            return;
+          }
+        }
+
         if (active) {
           setDetails(data);
           setIsPlayingTrailer(false); // default to main streaming player

@@ -14,14 +14,30 @@ export default function SidebarRecommendations({ currentId, currentType, setView
         // Find which list the current movie belongs to, and fetch others from it as recommendations!
         // This ensures the sidebar is highly relevant (e.g. Anime shows other Anime, Marvel shows Marvel)
         let relevantList = [];
-        if (currentType === 'tv') {
-          // Check if Kdrama
+        const isIslamic = String(currentId).startsWith('youtube-') || CURATED_LISTS.islamic.some(item => item.id === currentId);
+        
+        if (isIslamic) {
+          relevantList = CURATED_LISTS.islamic;
+        } else if (currentType === 'tv') {
+          // Check tv show categories
           const isKdrama = CURATED_LISTS.kdrama.some(item => item.id === currentId);
-          relevantList = isKdrama ? CURATED_LISTS.kdrama : CURATED_LISTS.anime;
+          const isChinese = CURATED_LISTS.chinese.some(item => item.id === currentId);
+          const isTurkish = CURATED_LISTS.turkish.some(item => item.id === currentId);
+          
+          if (isKdrama) relevantList = CURATED_LISTS.kdrama;
+          else if (isChinese) relevantList = CURATED_LISTS.chinese;
+          else if (isTurkish) relevantList = CURATED_LISTS.turkish;
+          else relevantList = CURATED_LISTS.anime;
         } else {
-          // Check if Marvel
+          // Check movie categories
           const isMarvel = CURATED_LISTS.marvel.some(item => item.id === currentId);
-          relevantList = isMarvel ? CURATED_LISTS.marvel : CURATED_LISTS.anime;
+          const isHollywood = CURATED_LISTS.hollywood.some(item => item.id === currentId);
+          const isPunjabi = CURATED_LISTS.punjabi.some(item => item.id === currentId);
+          
+          if (isMarvel) relevantList = CURATED_LISTS.marvel;
+          else if (isHollywood) relevantList = CURATED_LISTS.hollywood;
+          else if (isPunjabi) relevantList = CURATED_LISTS.punjabi;
+          else relevantList = CURATED_LISTS.anime;
         }
 
         // Filter out current playing item and pick up to 5 recommendations
