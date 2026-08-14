@@ -244,6 +244,53 @@ export default function App() {
           
           return !hasBannedKeyword;
         });
+
+        // --- SMART FALLBACK FOR MIXED / MISSPELLED / MULTI-TERM QUERIES ---
+        // If we got very few results (less than 3), let's split the search terms and run a broader fallback query!
+        const words = cleanQuery.split(' ').filter(w => w.length > 2 && !['and', 'the', 'for', 'with', 'from', 'this', 'that'].includes(w));
+        
+        if (filtered.length < 3 && words.length > 1) {
+          // Run parallel fetches for each key term (up to 3 terms)
+          const fallbackPromises = words.slice(0, 3).map(word => 
+            fetch(
+              `${TMDB_CONFIG.BASE_URL}/search/multi?api_key=${TMDB_CONFIG.API_KEY}&query=${encodeURIComponent(word)}`
+            )
+              .then(res => res.json())
+              .then(d => d.results || [])
+              .catch(() => [])
+          );
+          
+          const fallbackResultsArrays = await Promise.all(fallbackPromises);
+          
+          // Merge results, removing duplicates
+          const seenIds = new Set(filtered.map(item => item.id));
+          const fallbackMerged = [];
+          
+          // We will round-robin merge results from the different word searches for a balanced result set
+          const maxLength = Math.max(...fallbackResultsArrays.map(arr => arr.length));
+          for (let i = 0; i < maxLength; i++) {
+            for (let j = 0; j < fallbackResultsArrays.length; j++) {
+              const item = fallbackResultsArrays[j][i];
+              if (item && (item.media_type === 'movie' || item.media_type === 'tv')) {
+                if (!seenIds.has(item.id)) {
+                  seenIds.add(item.id);
+                  // Check banned keywords
+                  const titleLower = (item.title || item.name || '').toLowerCase();
+                  const overviewLower = (item.overview || '').toLowerCase();
+                  const hasBanned = BANNED_KEYWORDS.some(w => titleLower.includes(w) || overviewLower.includes(w));
+                  const hasImages = item.poster_path || item.backdrop_path;
+                  
+                  if (!hasBanned && hasImages && !item.adult) {
+                    fallbackMerged.push(item);
+                  }
+                }
+              }
+            }
+          }
+          
+          // Combine original matches with the fallback merged matches
+          filtered = [...filtered, ...fallbackMerged].slice(0, 40); // Cap at 40 results
+        }
       }
 
       // 3. Combine results (local custom matches first)
