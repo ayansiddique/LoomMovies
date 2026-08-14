@@ -8,56 +8,20 @@ import CustomPlayer from '../components/CustomPlayer';
 
 const SERVERS = [
   {
+    id: 'custom-player',
+    name: 'Server 1 (Ad-Free Player)',
+    movie: () => '',
+    tv: () => ''
+  },
+  {
     id: 'vidlink-pro',
-    name: 'Server 1 (VidLink - Clean)',
+    name: 'Server 2 (Backup Player)',
     movie: (id) => `https://vidlink.pro/movie/${id}?primaryColor=06b6d4&secondaryColor=0891b2&icons=vid`,
     tv: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=06b6d4&secondaryColor=0891b2&icons=vid`
   },
   {
-    id: 'vidsrc-me',
-    name: 'Server 2 (VidSrc.me)',
-    movie: (id) => `https://vidsrc.me/embed/movie/${id}`,
-    tv: (id, s, e) => `https://vidsrc.me/embed/tv/${id}/${s}/${e}`
-  },
-  {
-    id: 'embed-su',
-    name: 'Server 3 (Embed.su)',
-    movie: (id) => `https://embed.su/embed/movie/${id}`,
-    tv: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}`
-  },
-  {
-    id: 'vidsrc-xyz',
-    name: 'Server 4 (VidSrc.xyz)',
-    movie: (id) => `https://vidsrc.xyz/embed/movie/${id}`,
-    tv: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`
-  },
-  {
-    id: 'vidsrc-cc',
-    name: 'Server 5 (VidSrc.cc)',
-    movie: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
-    tv: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`
-  },
-  {
-    id: 'vidsrc-to',
-    name: 'Server 6 (VidSrc.to)',
-    movie: (id) => `https://vidsrc.to/embed/movie/${id}`,
-    tv: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}`
-  },
-  {
-    id: 'autoembed',
-    name: 'Server 7 (MultiEmbed)',
-    movie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
-    tv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
-  },
-  {
-    id: 'vidsrc-pm',
-    name: 'Server 8 (VidSrc.pm)',
-    movie: (id) => `https://vidsrc.pm/embed/movie/${id}`,
-    tv: (id, s, e) => `https://vidsrc.pm/embed/tv/${id}/${s}/${e}`
-  },
-  {
     id: 'desidub',
-    name: 'Server 9 (Hindi Dubbed Anime)',
+    name: 'Server 3 (Hindi Dubbed Anime)',
     movie: () => '',
     tv: () => ''
   }
@@ -531,6 +495,26 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                 allowFullScreen
                 className="video-iframe"
               ></iframe>
+            ) : SERVERS[activeServerIndex]?.id === 'custom-player' ? (
+              isFetchingDirect ? (
+                <div className="watch-loading-inner animate-pulse">
+                  <RefreshCw className="spinner" size={40} />
+                  <p>Searching ad-free stream databases...</p>
+                </div>
+              ) : directStreamUrl ? (
+                <CustomPlayer
+                  src={directStreamUrl}
+                  poster={TMDB_CONFIG.backdropUrl(details.backdrop_path)}
+                  title={title}
+                  onBackToServers={() => setActiveServerIndex(1)}
+                />
+              ) : (
+                <div className="watch-error-inner">
+                  <AlertTriangle size={40} className="error-icon" />
+                  <h3>Ad-Free Stream Not Found</h3>
+                  <p>We couldn't resolve a clean stream. Please select <b>Server 2 (Backup Player)</b> below!</p>
+                </div>
+              )
             ) : SERVERS[activeServerIndex]?.id === 'desidub' ? (
               isFetchingHindi ? (
                 <div className="watch-loading-inner animate-pulse">
@@ -542,14 +526,14 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                   <AlertTriangle size={40} className="error-icon" />
                   <h3>Hindi Dub Not Available</h3>
                   <p>{hindiError}</p>
-                  <p className="sub-text">Please try Server 2 or Server 6 for standard multi-audio tracks.</p>
+                  <p className="sub-text">Please try Server 2 (Backup Player) for standard audio tracks.</p>
                 </div>
-              ) : useCustomPlayer && directStreamUrl ? (
+              ) : directStreamUrl ? (
                 <CustomPlayer
                   src={directStreamUrl}
                   poster={TMDB_CONFIG.backdropUrl(details.backdrop_path)}
                   title={title}
-                  onBackToServers={() => setUseCustomPlayer(false)}
+                  onBackToServers={() => setActiveServerIndex(1)}
                 />
               ) : hindiEmbedUrl ? (
                 <iframe
@@ -559,7 +543,7 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   className="video-iframe"
-                ></iframe>
+                />
               ) : (
                 <div className="watch-error-inner">
                   <AlertTriangle size={40} className="error-icon" />
@@ -567,13 +551,6 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                   <p>Could not resolve any playback streams on this server.</p>
                 </div>
               )
-            ) : useCustomPlayer && directStreamUrl ? (
-              <CustomPlayer
-                src={directStreamUrl}
-                poster={TMDB_CONFIG.backdropUrl(details.backdrop_path)}
-                title={title}
-                onBackToServers={() => setUseCustomPlayer(false)}
-              />
             ) : (
               <iframe
                 src={mainStreamUrl}
@@ -582,7 +559,7 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="video-iframe"
-              ></iframe>
+              />
             )}
           </div>
 
@@ -591,36 +568,20 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
             <div className="player-meta-controls">
               <div className="stream-source-indicators" style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                  <span className="source-label">Source:</span>
-                  {directStreamUrl && !isPlayingTrailer && (
-                    <button 
-                      className={`source-badge ${useCustomPlayer ? 'active' : ''}`}
-                      onClick={() => setUseCustomPlayer(true)}
-                      style={{
-                        background: useCustomPlayer ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '',
-                        borderColor: useCustomPlayer ? '#10b981' : ''
-                      }}
-                      title="Play using the custom ad-free video player"
-                    >
-                      <Monitor size={12} /> ⚡ Ad-Free Player (Active)
-                    </button>
-                  )}
-                  <button 
-                    className={`source-badge ${!isPlayingTrailer && !useCustomPlayer ? 'active' : ''}`}
-                    onClick={() => {
-                      setIsPlayingTrailer(false);
-                      setUseCustomPlayer(false);
-                    }}
-                    title="Play using standard third-party embed servers"
-                  >
-                    <Monitor size={12} /> {directStreamUrl ? 'Iframe Servers' : 'Main Playback Server'}
-                  </button>
                   {trailerUrl && (
                     <button 
                       className={`source-badge ${isPlayingTrailer ? 'active' : ''}`}
                       onClick={() => setIsPlayingTrailer(true)}
                     >
                       <Play size={12} /> Official Trailer
+                    </button>
+                  )}
+                  {isPlayingTrailer && (
+                    <button 
+                      className="source-badge"
+                      onClick={() => setIsPlayingTrailer(false)}
+                    >
+                      <Tv size={12} /> Back to Movie
                     </button>
                   )}
                 </div>
@@ -661,7 +622,7 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                   <span className="server-label" style={{ margin: 0 }}>Select Server</span>
                   <span className="active-server-badge">
-                    Active: {useCustomPlayer ? '⚡ Ad-Free Player' : `Server ${activeServerIndex + 1}`}
+                    Active: {SERVERS[activeServerIndex]?.name || 'Server 1'}
                   </span>
                 </div>
                 <ChevronDown 
@@ -678,10 +639,9 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                       return (
                         <button
                           key={server.id}
-                          className={`server-btn-selector ${!useCustomPlayer && activeServerIndex === idx ? 'active' : ''} ${isReported ? 'server-reported' : ''}`}
+                          className={`server-btn-selector ${activeServerIndex === idx ? 'active' : ''} ${isReported ? 'server-reported' : ''}`}
                           onClick={() => {
                             setActiveServerIndex(idx);
-                            setUseCustomPlayer(false); // Switch to the selected server iframe!
                             setShowServers(false); // auto-close after selection
                           }}
                           title={isReported ? "This server was reported as broken by users" : ""}

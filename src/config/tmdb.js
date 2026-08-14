@@ -377,3 +377,18 @@ export async function fetchMediaDetails(id, type) {
     return null;
   }
 }
+
+export async function fetchMediaDetailsLight(id, type) {
+  try {
+    if (typeof id === 'string' && id.startsWith('youtube-')) {
+      return fetchMediaDetails(id, type);
+    }
+    const res = await fetch(`${TMDB_CONFIG.BASE_URL}/${type}/${id}?api_key=${TMDB_CONFIG.API_KEY}`);
+    if (!res.ok) throw new Error(`Failed to fetch light details for tmdb id: ${id}`);
+    const data = await res.json();
+    return { ...data, media_type: type };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}

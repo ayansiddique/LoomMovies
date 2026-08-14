@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Play } from 'lucide-react';
-import { fetchMediaDetails, TMDB_CONFIG, CURATED_LISTS } from '../config/tmdb';
+import { fetchMediaDetailsLight, TMDB_CONFIG, CURATED_LISTS } from '../config/tmdb';
 
 export default function SidebarRecommendations({ currentId, currentType, setView }) {
   const [recommendations, setRecommendations] = useState([]);
@@ -46,7 +46,7 @@ export default function SidebarRecommendations({ currentId, currentType, setView
           .slice(0, 5);
 
         // Fetch details
-        const promises = filteredList.map(item => fetchMediaDetails(item.id, item.type));
+        const promises = filteredList.map(item => fetchMediaDetailsLight(item.id, item.type));
         const results = await Promise.all(promises);
         
         if (active) {
