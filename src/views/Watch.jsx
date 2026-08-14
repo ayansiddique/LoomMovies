@@ -505,7 +505,7 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
           <div className="ad-info-bar glass">
             <AlertTriangle size={14} className="warning-yellow" />
             <span>
-              <b>Tip:</b> Block popups by downloading our <b>Loom Extension</b> (link in the top bar). For <b>Hindi Audio</b>, click the Settings (⚙️/Audio) icon inside the player (Server 6 or Server 3) and switch the audio track!
+              <b>Tip:</b> Block popups by downloading our <b>Loom Extension</b> (link in the top bar). If a movie (especially Punjabi/Bollywood) doesn't play or load, click <b>Select Server</b> below the player and switch to <b>Server 3 (Embed.su)</b>, <b>Server 2</b>, or <b>Server 7</b>! For <b>Hindi Audio</b>, switch audio track inside Server 6 or 3 settings.
             </span>
           </div>
         )}

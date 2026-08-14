@@ -15,7 +15,7 @@ export default function Banner({ setView, watchlist, onWatchlistToggle }) {
       try {
         const CACHE_KEY = 'loom_banner_movies';
         const TIMESTAMP_KEY = 'loom_banner_timestamp';
-        const CACHE_DURATION = 2.5 * 24 * 60 * 60 * 1000; // 2.5 days cache duration
+        const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours cache duration (updates twice daily)
         
         const cachedData = localStorage.getItem(CACHE_KEY);
         const cachedTime = localStorage.getItem(TIMESTAMP_KEY);
