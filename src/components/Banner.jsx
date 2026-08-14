@@ -13,7 +13,7 @@ export default function Banner({ setView, watchlist, onWatchlistToggle }) {
     async function loadBannerMovies() {
       setLoading(true);
       try {
-        const CACHE_KEY = 'loom_banner_movies';
+        const CACHE_KEY = 'loom_banner_movies_v4';
         const TIMESTAMP_KEY = 'loom_banner_timestamp';
         const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours cache duration (updates twice daily)
         
@@ -54,7 +54,7 @@ export default function Banner({ setView, watchlist, onWatchlistToggle }) {
           
         // Combine trending and upcoming items for a varied dynamic layout (up to 6 items)
         const mixedList = [
-          { id: 185567, type: 'movie' } // Aashiqui 2 (Featured at the top)
+          { id: 1444466, type: 'movie' } // Awarapan 2 (Emraan Hashmi's new release featured at the top)
         ];
         let tIndex = 0;
         let uIndex = 0;
