@@ -53,7 +53,9 @@ export default function Banner({ setView, watchlist, onWatchlistToggle }) {
           .map(item => ({ id: item.id, type: 'movie' }));
           
         // Combine trending and upcoming items for a varied dynamic layout (up to 6 items)
-        const mixedList = [];
+        const mixedList = [
+          { id: 185567, type: 'movie' } // Aashiqui 2 (Featured at the top)
+        ];
         let tIndex = 0;
         let uIndex = 0;
         

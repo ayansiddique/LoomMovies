@@ -150,10 +150,10 @@ export default function App() {
 
       if (/^(hindi|hindi\s+movies?|hindi\s+films?)$/.test(cleanQuery)) {
         langCode = 'hi';
-        discoverType = 'multi';
+        discoverType = 'movie';
       } else if (/^(english|english\s+movies?|english\s+films?)$/.test(cleanQuery)) {
         langCode = 'en';
-        discoverType = 'multi';
+        discoverType = 'movie';
       } else if (/^(punjabi|punjabi\s+movies?|punjabi\s+films?)$/.test(cleanQuery)) {
         langCode = 'pa';
         discoverType = 'movie';
@@ -171,7 +171,7 @@ export default function App() {
         discoverType = 'multi';
       } else if (/^(urdu|urdu\s+movies?|urdu\s+films?)$/.test(cleanQuery)) {
         langCode = 'ur';
-        discoverType = 'multi';
+        discoverType = 'movie';
       }
 
       let filtered = [];
