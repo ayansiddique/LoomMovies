@@ -260,7 +260,7 @@ body.theme-aug14 {
 }
 
 body.theme-aug14 .gradient-text {
-  background: linear-gradient(135deg, #34d399 0%, #ffffff 50%, #10b981 100%);
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -313,7 +313,7 @@ body.theme-aug15 {
 }
 
 body.theme-aug15 .gradient-text {
-  background: linear-gradient(135deg, #ff9933 0%, #ffffff 50%, #128807 100%);
+  background: linear-gradient(135deg, #ff9933 0%, #128807 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -467,9 +467,12 @@ body.theme-aug15 .special-badge {
 }
 
 .sidebar-link.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-  box-shadow: 0 4px 15px var(--color-primary-glow);
+  color: var(--color-primary) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-left: 3px solid var(--color-primary);
+  padding-left: 13px;
+  border-radius: 0 10px 10px 0;
+  box-shadow: none;
 }
 
 /* Sidebar Get App card widgets */

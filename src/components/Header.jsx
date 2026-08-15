@@ -206,23 +206,25 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
       </aside>
 
       {/* Top header bar */}
-      <header className="top-header-bar">
-        {/* Mobile Logo (only visible on mobile layout) */}
-        <div className="mobile-logo-section" onClick={() => { setView('home'); setSearchVal(''); }}>
-          <span className="logo-text gradient-text">Loom Movies</span>
+      <header className="top-header-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 30px' }}>
+        {/* Header Logo (Left aligned) */}
+        <div className="logo-section" onClick={() => { setView('home'); setSearchVal(''); }} style={{ cursor: 'pointer' }}>
+          <span className="logo-text gradient-text" style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-secondary)', letterSpacing: '-0.02em' }}>Loom Movies</span>
+          {activeTheme === 'aug14' && <span className="special-badge">🇵🇰</span>}
+          {activeTheme === 'aug15' && <span className="special-badge">🇮🇳</span>}
         </div>
 
-        {/* Search Bar Container */}
-        <div className="search-wrapper" ref={searchRef} style={{ maxWidth: '400px', flex: '1', position: 'relative' }}>
+        {/* Search Bar Container (Right aligned) */}
+        <div className="search-wrapper" ref={searchRef} style={{ maxWidth: '320px', width: '100%', position: 'relative' }}>
           <form onSubmit={handleSearchSubmitLocal} className="search-form" style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--color-border)', borderRadius: '20px', padding: '4px 12px' }}>
             <input
               type="text"
-              placeholder="Search movies, anime, dramas..."
+              placeholder="Search movies, anime..."
               value={searchVal}
               onChange={handleSearchChange}
               onFocus={() => setShowSuggestions(true)}
               className="search-input"
-              style={{ background: 'none', border: 'none', color: '#fff', fontSize: '0.88rem', padding: '6px 8px', outline: 'none', width: '100%' }}
+              style={{ background: 'none', border: 'none', color: '#fff', fontSize: '0.85rem', padding: '6px 8px', outline: 'none', width: '100%' }}
             />
             <button type="submit" className="search-btn" style={{ background: 'none', border: 'none', color: '#a0a0b0', cursor: 'pointer' }}>
               <Search size={16} />
@@ -258,22 +260,6 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
               ))}
             </div>
           )}
-        </div>
-
-        {/* Right Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button className="header-premium-btn desktop-only-btn" onClick={() => setShowAppModal(true)}>
-            👑 Go Premium
-          </button>
-          
-          <button className="header-login-btn desktop-only-btn">
-            👤 Log In
-          </button>
-
-          {/* Mobile download button trigger */}
-          <button className="mobile-menu-trigger-btn" onClick={() => setShowAppModal(true)}>
-            <Download size={20} />
-          </button>
         </div>
       </header>
 
