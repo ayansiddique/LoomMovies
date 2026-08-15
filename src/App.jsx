@@ -329,17 +329,18 @@ export default function App() {
   }
 
   return (
-    <div className="app-container">
-      {/* Premium Glass Header Navigation */}
-      <Header 
-        currentView={view} 
-        setView={setViewNavigate} 
-        watchlist={watchlist} 
-        onSearchSubmit={handleSearchSubmit} 
-        activeTheme={activeTheme}
-      />
+    <div className="app-layout">
+      <div className="main-content-layout">
+        {/* Premium Glass Header Navigation */}
+        <Header 
+          currentView={view} 
+          setView={setViewNavigate} 
+          watchlist={watchlist} 
+          onSearchSubmit={handleSearchSubmit} 
+          activeTheme={activeTheme}
+        />
 
-      <main className="main-content">
+        <main className="main-content">
         
         {/* VIEW: HOME */}
         {view === 'home' && (
@@ -663,6 +664,7 @@ export default function App() {
           }
         }
       `}</style>
+      </div>
     </div>
   );
 }

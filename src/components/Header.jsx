@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Film, Heart, Home, Menu, X, Play, Share2, Download } from 'lucide-react';
+import { Search, Film, Heart, Home, Menu, X, Play, Share2, Download, Tv, Monitor, Languages } from 'lucide-react';
 import { TMDB_CONFIG, BANNED_KEYWORDS } from '../config/tmdb';
 import { SOCIAL_LINKS } from '../config/social';
 
@@ -104,277 +104,221 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
   };
 
   return (
-    <header className="header-nav glass-nav">
-      <div className="header-container">
-        {/* Brand Logo */}
-        <div className="logo-section" onClick={() => { setView('home'); setSearchVal(''); }}>
-          <span className="logo-text gradient-text">Loom Movies</span>
-          {activeTheme === 'aug14' && (
-            <span className="special-badge">🇵🇰 14 Aug Live</span>
-          )}
-          {activeTheme === 'aug15' && (
-            <span className="special-badge">🇮🇳 15 Aug Live</span>
-          )}
+    <>
+      {/* Desktop fixed sidebar */}
+      <aside className="desktop-sidebar">
+        {/* Logo Section */}
+        <div className="sidebar-logo" onClick={() => { setView('home'); setSearchVal(''); }}>
+          <span className="sidebar-logo-text gradient-text">
+            🎬 Loom Movies
+          </span>
+          {activeTheme === 'aug14' && <span className="special-badge">🇵🇰</span>}
+          {activeTheme === 'aug15' && <span className="special-badge">🇮🇳</span>}
         </div>
 
-        {/* Desktop Navigation */}
-        <nav className="desktop-nav">
+        {/* Decorative Language Selector block */}
+        <div className="sidebar-lang-selector">
+          <Languages size={16} />
+          <span>English (US)</span>
+        </div>
+
+        {/* Sidebar Nav links */}
+        <nav className="sidebar-nav">
           <button 
-            className={`nav-link ${currentView === 'home' && !searchVal ? 'active' : ''}`}
+            className={`sidebar-link ${currentView === 'home' && !searchVal ? 'active' : ''}`}
             onClick={() => { setView('home'); setSearchVal(''); }}
           >
             <Home size={18} /> Home
           </button>
           <button 
-            className="nav-link" 
+            className={`sidebar-link ${searchVal === 'Marvel' ? 'active' : ''}`}
             onClick={() => navigateToCategory('Marvel')}
           >
-            Marvel
+            <Tv size={18} /> Marvel
           </button>
           <button 
-            className="nav-link" 
+            className={`sidebar-link ${searchVal === 'Anime' ? 'active' : ''}`}
             onClick={() => navigateToCategory('Anime')}
           >
-            Anime
+            <Film size={18} /> Anime
           </button>
           <button 
-            className="nav-link" 
+            className={`sidebar-link ${searchVal === 'Kdrama' ? 'active' : ''}`}
             onClick={() => navigateToCategory('Kdrama')}
           >
-            K-Drama
+            <Tv size={18} /> K-Drama
           </button>
           <button 
-            className={`nav-link watchlist-btn ${currentView === 'watchlist' ? 'active' : ''}`}
+            className={`sidebar-link ${currentView === 'watchlist' ? 'active' : ''}`}
             onClick={() => setView('watchlist')}
           >
             <Heart size={18} /> Watchlist
-            {watchlist.length > 0 && <span className="watchlist-badge">{watchlist.length}</span>}
+            {watchlist.length > 0 && <span style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.15)', padding: '2px 8px', borderRadius: '10px', fontSize: '0.75rem' }}>{watchlist.length}</span>}
           </button>
-          
-          <div className="community-dropdown-wrapper" ref={communityRef}>
+
+          {/* Social Channels Dropdown inside sidebar */}
+          <div ref={communityRef} style={{ position: 'relative' }}>
             <button 
-              className={`nav-link community-btn ${showCommunityDropdown ? 'active' : ''}`}
+              className={`sidebar-link ${showCommunityDropdown ? 'active' : ''}`}
               onClick={() => setShowCommunityDropdown(!showCommunityDropdown)}
+              style={{ width: '100%' }}
             >
               <Share2 size={18} /> Channels
             </button>
             {showCommunityDropdown && (
-              <div className="community-dropdown glass animate-fade-in">
-                <div className="dropdown-section-title">Official Networks</div>
-                <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" className="dropdown-item">
-                  <span className="dot whatsapp-dot"></span> WhatsApp Channel
+              <div className="community-dropdown glass animate-fade-in" style={{ position: 'absolute', top: '100%', left: '0', right: '0', marginTop: '4px', zIndex: '100', background: 'rgba(15,15,22,0.95)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '8px' }}>
+                <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" className="dropdown-item" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', color: '#a0a0b0', textDecoration: 'none', fontSize: '0.85rem' }}>
+                  <span className="dot whatsapp-dot" style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#25d366' }}></span> WhatsApp Channel
                 </a>
-                <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className="dropdown-item">
-                  <span className="dot facebook-dot"></span> Facebook Community
+                <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className="dropdown-item" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', color: '#a0a0b0', textDecoration: 'none', fontSize: '0.85rem' }}>
+                  <span className="dot facebook-dot" style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#1877f2' }}></span> Facebook Group
                 </a>
-                <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="dropdown-item">
-                  <span className="dot instagram-dot"></span> Instagram Profile
-                </a>
-                <div className="dropdown-divider"></div>
-                <div className="dropdown-section-title">Support & Info</div>
-                <a href={SOCIAL_LINKS.company} target="_blank" rel="noopener noreferrer" className="dropdown-item">
-                  <span className="dot company-dot"></span> Company Channel
-                </a>
-                <a href={SOCIAL_LINKS.official} target="_blank" rel="noopener noreferrer" className="dropdown-item">
-                  <span className="dot official-dot"></span> Official News
+                <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="dropdown-item" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', color: '#a0a0b0', textDecoration: 'none', fontSize: '0.85rem' }}>
+                  <span className="dot instagram-dot" style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#e1306c' }}></span> Instagram Profile
                 </a>
               </div>
             )}
           </div>
-          
-          <button 
-            className="nav-link get-app-btn" 
-            onClick={() => setShowAppModal(true)}
-            style={{
-              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)',
-              color: 'white',
-              padding: '6px 14px',
-              borderRadius: '20px',
-              border: 'none',
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)',
-              transition: 'var(--transition-normal)'
-            }}
-          >
-            <Download size={16} /> Get App
-          </button>
         </nav>
 
-        {/* Search Bar */}
-        <div className="search-wrapper" ref={searchRef}>
-          <form onSubmit={handleSearchSubmitLocal} className="search-form">
+        {/* Sidebar Get App card widgets */}
+        <div className="sidebar-app-widget">
+          <span className="widget-title">Get LoomMovies App</span>
+          <div className="widget-card highlight" onClick={() => setShowAppModal(true)}>
+            <div className="widget-card-icon">
+              <Download size={16} />
+            </div>
+            <div className="widget-card-details">
+              <span className="widget-card-title">Mobile APK</span>
+              <span className="widget-card-sub">For Android & iOS</span>
+            </div>
+          </div>
+          <div className="widget-card" onClick={() => setShowAppModal(true)}>
+            <div className="widget-card-icon">
+              <Monitor size={16} />
+            </div>
+            <div className="widget-card-details">
+              <span className="widget-card-title">Windows EXE</span>
+              <span className="widget-card-sub">For Windows PC</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Top header bar */}
+      <header className="top-header-bar">
+        {/* Mobile Logo (only visible on mobile layout) */}
+        <div className="mobile-logo-section" onClick={() => { setView('home'); setSearchVal(''); }}>
+          <span className="logo-text gradient-text">Loom Movies</span>
+        </div>
+
+        {/* Search Bar Container */}
+        <div className="search-wrapper" ref={searchRef} style={{ maxWidth: '400px', flex: '1', position: 'relative' }}>
+          <form onSubmit={handleSearchSubmitLocal} className="search-form" style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--color-border)', borderRadius: '20px', padding: '4px 12px' }}>
             <input
               type="text"
               placeholder="Search movies, anime, dramas..."
               value={searchVal}
               onChange={handleSearchChange}
               onFocus={() => setShowSuggestions(true)}
-              className="search-input glass"
+              className="search-input"
+              style={{ background: 'none', border: 'none', color: '#fff', fontSize: '0.88rem', padding: '6px 8px', outline: 'none', width: '100%' }}
             />
-            <button type="submit" className="search-btn">
-              <Search size={18} />
+            <button type="submit" className="search-btn" style={{ background: 'none', border: 'none', color: '#a0a0b0', cursor: 'pointer' }}>
+              <Search size={16} />
             </button>
           </form>
 
           {/* Suggestions Dropdown */}
           {showSuggestions && suggestions.length > 0 && (
-            <div className="search-suggestions glass animate-fade-in">
+            <div className="search-suggestions glass animate-fade-in" style={{ position: 'absolute', top: '100%', left: '0', right: '0', background: 'rgba(10,10,15,0.98)', border: '1px solid var(--color-border)', borderRadius: '12px', marginTop: '8px', zIndex: '999', padding: '8px' }}>
               {suggestions.map((item) => (
                 <div 
                   key={item.id} 
                   className="suggestion-item" 
                   onClick={() => handleSuggestionClick(item)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px', borderRadius: '8px', cursor: 'pointer', transition: '0.2s' }}
                 >
                   <img 
                     src={TMDB_CONFIG.posterUrl(item.poster_path)} 
                     alt={item.title || item.name} 
                     className="suggestion-poster"
+                    style={{ width: '36px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
                   />
-                  <div className="suggestion-details">
-                    <div className="suggestion-title">{item.title || item.name}</div>
-                    <div className="suggestion-meta">
+                  <div className="suggestion-details" style={{ flex: 1 }}>
+                    <div className="suggestion-title" style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>{item.title || item.name}</div>
+                    <div className="suggestion-meta" style={{ fontSize: '0.75rem', color: '#a0a0b0' }}>
                       <span className="suggestion-type">{item.media_type === 'movie' ? 'Movie' : 'TV Show'}</span>
-                      {item.release_date && <span className="suggestion-year">{item.release_date.split('-')[0]}</span>}
-                      {item.first_air_date && <span className="suggestion-year">{item.first_air_date.split('-')[0]}</span>}
+                      {item.release_date && <span className="suggestion-year" style={{ marginLeft: '8px' }}>{item.release_date.split('-')[0]}</span>}
+                      {item.first_air_date && <span className="suggestion-year" style={{ marginLeft: '8px' }}>{item.first_air_date.split('-')[0]}</span>}
                     </div>
                   </div>
-                  <Play size={14} className="suggestion-play" />
+                  <Play size={12} className="suggestion-play" style={{ color: 'var(--color-primary)' }} />
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
+        {/* Right Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button className="header-premium-btn desktop-only-btn" onClick={() => setShowAppModal(true)}>
+            👑 Go Premium
+          </button>
+          
+          <button className="header-login-btn desktop-only-btn">
+            👤 Log In
+          </button>
 
-      {/* Mobile Dropdown Navigation */}
-      {isMobileMenuOpen && (
-        <div className="mobile-dropdown glass animate-fade-in">
-          <nav className="mobile-nav">
-            {/* Mobile Search Input */}
-            <div className="mobile-search-wrapper" style={{ position: 'relative', width: '100%' }}>
-              <form onSubmit={handleSearchSubmitLocal} className="mobile-search-form" style={{ marginBottom: 0 }}>
-                <input
-                  type="text"
-                  placeholder="Search movies, anime, dramas..."
-                  value={searchVal}
-                  onChange={handleSearchChange}
-                  onFocus={() => setShowSuggestions(true)}
-                  className="mobile-search-input glass"
-                />
-                <button type="submit" className="mobile-search-btn">
-                  <Search size={16} />
-                </button>
-              </form>
-
-              {/* Suggestions Dropdown for Mobile */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="search-suggestions mobile-search-suggestions glass animate-fade-in" style={{ position: 'absolute', top: 'calc(100% + 5px)', left: 0, right: 0, zIndex: 1200, background: 'rgba(9, 9, 12, 0.99)', maxHeight: '250px', overflowY: 'auto' }}>
-                  {suggestions.map((item) => (
-                    <div 
-                      key={item.id} 
-                      className="suggestion-item" 
-                      onClick={() => handleSuggestionClick(item)}
-                    >
-                      <img 
-                        src={TMDB_CONFIG.posterUrl(item.poster_path)} 
-                        alt={item.title || item.name} 
-                        className="suggestion-poster"
-                      />
-                      <div className="suggestion-details">
-                        <div className="suggestion-title">{item.title || item.name}</div>
-                        <div className="suggestion-meta">
-                          <span className="suggestion-type">{item.media_type === 'movie' ? 'Movie' : 'TV Show'}</span>
-                          {item.release_date && <span className="suggestion-year">{item.release_date.split('-')[0]}</span>}
-                          {item.first_air_date && <span className="suggestion-year">{item.first_air_date.split('-')[0]}</span>}
-                        </div>
-                      </div>
-                      <Play size={14} className="suggestion-play" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <button 
-              className={`mobile-nav-link ${currentView === 'home' && !searchVal ? 'active' : ''}`}
-              onClick={() => { setView('home'); setSearchVal(''); setIsMobileMenuOpen(false); }}
-            >
-              <Home size={18} /> Home
-            </button>
-            <button className="mobile-nav-link" onClick={() => navigateToCategory('Marvel')}>
-              Marvel Universe
-            </button>
-            <button className="mobile-nav-link" onClick={() => navigateToCategory('Anime')}>
-              Anime World
-            </button>
-            <button className="mobile-nav-link" onClick={() => navigateToCategory('Kdrama')}>
-              K-Drama Hits
-            </button>
-            <button 
-              className={`mobile-nav-link watchlist-btn-mobile ${currentView === 'watchlist' ? 'active' : ''}`}
-              onClick={() => { setView('watchlist'); setIsMobileMenuOpen(false); }}
-            >
-              <Heart size={18} /> Watchlist
-              {watchlist.length > 0 && <span className="watchlist-badge">{watchlist.length}</span>}
-            </button>
-
-            <button 
-              className={`mobile-nav-link community-btn-mobile ${showCommunityDropdown ? 'active' : ''}`}
-              onClick={() => setShowCommunityDropdown(!showCommunityDropdown)}
-            >
-              <Share2 size={18} /> Channels & Info
-            </button>
-            {showCommunityDropdown && (
-              <div className="mobile-community-sublist animate-fade-in">
-                <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" className="mobile-sublink" onClick={() => setIsMobileMenuOpen(false)}>
-                  <span className="dot whatsapp-dot"></span> WhatsApp Channel
-                </a>
-                <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className="mobile-sublink" onClick={() => setIsMobileMenuOpen(false)}>
-                  <span className="dot facebook-dot"></span> Facebook Group
-                </a>
-                <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="mobile-sublink" onClick={() => setIsMobileMenuOpen(false)}>
-                  <span className="dot instagram-dot"></span> Instagram Profile
-                </a>
-                <a href={SOCIAL_LINKS.company} target="_blank" rel="noopener noreferrer" className="mobile-sublink" onClick={() => setIsMobileMenuOpen(false)}>
-                  <span className="dot company-dot"></span> Company Channel
-                </a>
-                <a href={SOCIAL_LINKS.official} target="_blank" rel="noopener noreferrer" className="mobile-sublink" onClick={() => setIsMobileMenuOpen(false)}>
-                  <span className="dot official-dot"></span> Official News
-                </a>
-              </div>
-            )}
-            
-            <button 
-              className="mobile-nav-link mobile-get-app-btn" 
-              onClick={() => { setShowAppModal(true); setIsMobileMenuOpen(false); }}
-              style={{
-                background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)',
-                color: 'white',
-                fontWeight: 'bold',
-                borderRadius: '8px',
-                textAlign: 'center',
-                justifyContent: 'center',
-                marginTop: '15px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '12px'
-              }}
-            >
-              <Download size={18} /> Download Mobile App
-            </button>
-          </nav>
+          {/* Mobile download button trigger */}
+          <button className="mobile-menu-trigger-btn" onClick={() => setShowAppModal(true)}>
+            <Download size={20} />
+          </button>
         </div>
-      )}
+      </header>
+
+      {/* Mobile bottom nav bar */}
+      <nav className="mobile-bottom-nav">
+        <button 
+          className={`mobile-bottom-link ${currentView === 'home' && !searchVal ? 'active' : ''}`}
+          onClick={() => { setView('home'); setSearchVal(''); }}
+        >
+          <Home size={20} />
+          <span>Home</span>
+        </button>
+        
+        <button 
+          className={`mobile-bottom-link ${searchVal === 'Anime' ? 'active' : ''}`}
+          onClick={() => navigateToCategory('Anime')}
+        >
+          <Film size={20} />
+          <span>Anime</span>
+        </button>
+        
+        <button 
+          className={`mobile-bottom-link ${searchVal === 'Kdrama' ? 'active' : ''}`}
+          onClick={() => navigateToCategory('Kdrama')}
+        >
+          <Tv size={20} />
+          <span>K-Drama</span>
+        </button>
+        
+        <button 
+          className={`mobile-bottom-link ${currentView === 'watchlist' ? 'active' : ''}`}
+          onClick={() => setView('watchlist')}
+        >
+          <Heart size={20} />
+          <span>Watchlist</span>
+        </button>
+        
+        <button 
+          className="mobile-bottom-link"
+          onClick={() => setShowAppModal(true)}
+        >
+          <Download size={20} />
+          <span>Get App</span>
+        </button>
+      </nav>
 
       {/* Styling specific to header inside JS to keep index.css cleaner */}
       <style>{`
@@ -934,6 +878,6 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
