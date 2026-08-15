@@ -314,8 +314,25 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
         
         // Step 3: Find active episode number
         const currentEpNum = mediaType === 'tv' ? activeEpisode.episode : 1;
+        
         // Find closest episode match
-        const matchedEp = infoData.episodes.find(ep => ep.number === currentEpNum) || infoData.episodes[0];
+        let matchedEp = infoData.episodes.find(ep => ep.number === currentEpNum);
+        
+        // Dynamic fallback: if the requested episode is not in the parsed list, 
+        // but the main anime ID (slug) is found, dynamically build it!
+        if (!matchedEp && infoData.id) {
+          matchedEp = {
+            id: `${infoData.id}-episode-${currentEpNum}`,
+            number: currentEpNum,
+            title: `Episode ${currentEpNum}`,
+            url: `https://www.desidubanime.me/watch/${infoData.id}-episode-${currentEpNum}/`
+          };
+        }
+        
+        // Ultimate fallback to first parsed episode if dynamic generation fails
+        if (!matchedEp) {
+          matchedEp = infoData.episodes[0];
+        }
         
         if (!matchedEp?.id) {
           throw new Error(`Episode ${currentEpNum} not found in Hindi.`);
