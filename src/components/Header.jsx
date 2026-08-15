@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Film, Heart, Home, Menu, X, Play, Share2 } from 'lucide-react';
+import { Search, Film, Heart, Home, Menu, X, Play, Share2, Download } from 'lucide-react';
 import { TMDB_CONFIG, BANNED_KEYWORDS } from '../config/tmdb';
 import { SOCIAL_LINKS } from '../config/social';
 
@@ -11,6 +11,7 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
   const searchRef = useRef(null);
   
   const [showCommunityDropdown, setShowCommunityDropdown] = useState(false);
+  const [showAppModal, setShowAppModal] = useState(false);
   const communityRef = useRef(null);
 
   // Close search suggestions and dropdowns on click outside
@@ -180,6 +181,27 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
               </div>
             )}
           </div>
+          
+          <button 
+            className="nav-link get-app-btn" 
+            onClick={() => setShowAppModal(true)}
+            style={{
+              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)',
+              color: 'white',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              border: 'none',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)',
+              transition: 'var(--transition-normal)'
+            }}
+          >
+            <Download size={16} /> Get App
+          </button>
         </nav>
 
         {/* Search Bar */}
@@ -330,6 +352,26 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
                 </a>
               </div>
             )}
+            
+            <button 
+              className="mobile-nav-link mobile-get-app-btn" 
+              onClick={() => { setShowAppModal(true); setIsMobileMenuOpen(false); }}
+              style={{
+                background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)',
+                color: 'white',
+                fontWeight: 'bold',
+                borderRadius: '8px',
+                textAlign: 'center',
+                justifyContent: 'center',
+                marginTop: '15px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px'
+              }}
+            >
+              <Download size={18} /> Download Mobile App
+            </button>
           </nav>
         </div>
       )}
@@ -689,7 +731,209 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
           align-items: center;
           justify-content: center;
         }
+
+        /* App Modal Styles */
+        .app-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.85);
+          backdrop-filter: blur(8px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          padding: 20px;
+        }
+        .app-modal {
+          background: rgba(15, 15, 20, 0.95);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: var(--border-radius-lg);
+          padding: 30px;
+          max-width: 750px;
+          width: 100%;
+          position: relative;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+        .close-modal-btn {
+          position: absolute;
+          top: 15px;
+          right: 20px;
+          background: none;
+          border: none;
+          color: var(--color-text-dim);
+          font-size: 2.2rem;
+          cursor: pointer;
+          line-height: 1;
+          transition: var(--transition-fast);
+        }
+        .close-modal-btn:hover {
+          color: white;
+        }
+        .modal-title {
+          font-size: 2rem;
+          font-weight: 800;
+          margin-bottom: 8px;
+          text-align: center;
+        }
+        .modal-subtitle {
+          color: var(--color-text-muted);
+          text-align: center;
+          margin-bottom: 30px;
+          font-size: 1rem;
+        }
+        .modal-options {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+        @media (max-width: 650px) {
+          .modal-options {
+            grid-template-columns: 1fr;
+          }
+        }
+        .modal-card {
+          padding: 24px;
+          border-radius: var(--border-radius-md);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          transition: var(--transition-normal);
+        }
+        .modal-card:hover {
+          transform: translateY(-5px);
+          background: rgba(255, 255, 255, 0.04);
+        }
+        .card-header-icon {
+          font-size: 2.5rem;
+          margin-bottom: 12px;
+        }
+        .modal-card h3 {
+          font-size: 1.3rem;
+          font-weight: bold;
+          margin-bottom: 8px;
+          color: white;
+        }
+        .modal-card p {
+          color: var(--color-text-muted);
+          font-size: 0.9rem;
+          margin-bottom: 20px;
+          line-height: 1.4;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        @media (max-width: 650px) {
+          .modal-card p {
+            height: auto;
+          }
+        }
+        .download-btn {
+          width: 100%;
+          padding: 12px;
+          border-radius: 25px;
+          border: none;
+          font-weight: bold;
+          font-size: 0.95rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          text-decoration: none;
+          transition: var(--transition-normal);
+        }
+        .android-btn {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: white;
+          box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .android-btn:hover {
+          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+          transform: scale(1.02);
+        }
+        .ios-btn {
+          background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+          color: white;
+          box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+        .ios-btn:hover {
+          box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+          transform: scale(1.02);
+        }
+        .ios-steps {
+          text-align: left;
+          background: rgba(0, 0, 0, 0.2);
+          padding: 12px;
+          border-radius: var(--border-radius-sm);
+          font-size: 0.82rem;
+          color: var(--color-text-dim);
+          width: 100%;
+          margin-bottom: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          line-height: 1.3;
+        }
+        .app-meta {
+          font-size: 0.75rem;
+          color: var(--color-text-dim);
+          margin-top: 10px;
+        }
       `}</style>
+
+      {showAppModal && (
+        <div className="app-modal-overlay animate-fade-in" onClick={() => setShowAppModal(false)}>
+          <div className="app-modal glass animate-scale-up" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal-btn" onClick={() => setShowAppModal(false)}>×</button>
+            
+            <h2 className="modal-title gradient-text">Download Loom Movies App</h2>
+            <p className="modal-subtitle">Watch premium movies, anime, and dramas on any device without limits.</p>
+            
+            <div className="modal-options">
+              {/* Android Section */}
+              <div className="modal-card android-card glass">
+                <div className="card-header-icon">🤖</div>
+                <h3>Android Device</h3>
+                <p>Download our official ad-free apk file directly to your Android device.</p>
+                <a 
+                  href="/LoomMovies.apk" 
+                  download="LoomMovies.apk" 
+                  className="download-btn android-btn"
+                  onClick={() => {
+                    alert("Download starting! Install the APK file on your device. You may need to enable 'Unknown Sources' installation in settings.");
+                  }}
+                >
+                  <Download size={16} /> Download APK (v1.0.0)
+                </a>
+                <span className="app-meta">Size: ~5.4 MB | Android 6.0+</span>
+              </div>
+              
+              {/* iOS Section */}
+              <div className="modal-card ios-card glass">
+                <div className="card-header-icon">🍎</div>
+                <h3>iOS (iPhone / iPad)</h3>
+                <p>Install Loom Movies instantly via Safari without needing the App Store.</p>
+                <div className="ios-steps">
+                  <div className="step">1. Open Safari browser and go to this website.</div>
+                  <div className="step">2. Tap the <b>Share</b> icon at the bottom.</div>
+                  <div className="step">3. Select <b>'Add to Home Screen'</b> from the menu.</div>
+                </div>
+                <button className="download-btn ios-btn" onClick={() => alert("iOS relies on Safari's Add to Home Screen (PWA). Follow the steps listed above to install!")}>
+                  How to Install on iOS
+                </button>
+                <span className="app-meta">No jailbreak needed | All iOS versions</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
