@@ -10,8 +10,8 @@ const SERVERS = [
   {
     id: 'vidlink-pro',
     name: 'Server 1 (VidLink - Clean)',
-    movie: (id) => `https://vidlink.pro/movie/${id}?primaryColor=06b6d4&secondaryColor=0891b2&icons=vid`,
-    tv: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=06b6d4&secondaryColor=0891b2&icons=vid`
+    movie: (id) => `https://vidlink.pro/embed/movie/${id}?primaryColor=06b6d4&secondaryColor=0891b2&icons=vid`,
+    tv: (id, s, e) => `https://vidlink.pro/embed/tv/${id}/${s}/${e}?primaryColor=06b6d4&secondaryColor=0891b2&icons=vid`
   },
   {
     id: 'vidsrc-me',

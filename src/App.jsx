@@ -58,16 +58,7 @@ export default function App() {
 
   // 14th August (PK) and 15th August (IN) theme logic
   useEffect(() => {
-    const launchPKDate = new Date('2026-08-14T00:00:00').getTime();
-    const launchINDate = new Date('2026-08-15T00:00:00').getTime();
-    const endingINDate = new Date('2026-08-16T00:00:00').getTime();
-    
     const checkTheme = () => {
-      const now = Date.now();
-      const isPKLive = now >= launchPKDate && now < launchINDate;
-      const isINLive = now >= launchINDate && now < endingINDate;
-      
-      // Allow forced preview by adding theme=aug14 or theme=aug15 to the URL
       const urlParams = new URLSearchParams(window.location.search);
       const forcedTheme = urlParams.get('theme');
       
@@ -75,10 +66,6 @@ export default function App() {
       if (forcedTheme === 'aug14') {
         themeToApply = 'aug14';
       } else if (forcedTheme === 'aug15') {
-        themeToApply = 'aug15';
-      } else if (isPKLive) {
-        themeToApply = 'aug14';
-      } else if (isINLive) {
         themeToApply = 'aug15';
       }
       
@@ -92,8 +79,6 @@ export default function App() {
     };
     
     checkTheme();
-    const interval = setInterval(checkTheme, 10000); // Check every 10 seconds
-    return () => clearInterval(interval);
   }, []);
 
   const setViewNavigate = (targetView, id = null, type = 'movie') => {

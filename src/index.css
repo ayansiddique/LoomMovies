@@ -407,6 +407,10 @@ body.theme-aug15 .special-badge {
   z-index: 900;
 }
 
+.top-header-bar .logo-section {
+  display: none !important;
+}
+
 /* Sidebar navigation links */
 .sidebar-logo {
   padding: 24px 20px 16px;
@@ -630,6 +634,9 @@ body.theme-aug15 .special-badge {
   }
   .top-header-bar {
     padding: 0 15px;
+  }
+  .top-header-bar .logo-section {
+    display: flex !important;
   }
   .mobile-bottom-nav {
     display: flex;

@@ -52,7 +52,7 @@ export const CURATED_LISTS = {
   ],
   islamic: [
     { 
-      id: 'youtube-s06p0_0_JpQ', 
+      id: 'youtube-s06pO_O_JpQ', 
       type: 'movie', 
       title: 'Dr. Israr Ahmed - Bayan-ul-Quran (Part 1)',
       overview: 'Introduction to the Quran, Tafseer and the purpose of human creation by Dr. Israr Ahmed.',

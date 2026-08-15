@@ -274,24 +274,32 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
         </button>
         
         <button 
-          className={`mobile-bottom-link ${searchVal === 'Anime' ? 'active' : ''}`}
-          onClick={() => navigateToCategory('Anime')}
+          className={`mobile-bottom-link ${showCommunityDropdown ? 'active' : ''}`}
+          onClick={() => setShowCommunityDropdown(!showCommunityDropdown)}
         >
-          <Film size={20} />
-          <span>Anime</span>
+          <Share2 size={20} />
+          <span>Channels</span>
         </button>
         
         <button 
-          className={`mobile-bottom-link ${searchVal === 'Kdrama' ? 'active' : ''}`}
-          onClick={() => navigateToCategory('Kdrama')}
+          className="mobile-bottom-link"
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+              document.querySelector('.search-input')?.focus();
+            }, 300);
+          }}
         >
-          <Tv size={20} />
-          <span>K-Drama</span>
+          <Search size={20} />
+          <span>Search</span>
         </button>
         
         <button 
           className={`mobile-bottom-link ${currentView === 'watchlist' ? 'active' : ''}`}
-          onClick={() => setView('watchlist')}
+          onClick={() => {
+            setView('watchlist');
+            setShowCommunityDropdown(false);
+          }}
         >
           <Heart size={20} />
           <span>Watchlist</span>
@@ -299,12 +307,33 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
         
         <button 
           className="mobile-bottom-link"
-          onClick={() => setShowAppModal(true)}
+          onClick={() => {
+            setShowAppModal(true);
+            setShowCommunityDropdown(false);
+          }}
         >
           <Download size={20} />
           <span>Get App</span>
         </button>
       </nav>
+
+      {/* Floating Channels Dropdown for Mobile Bottom Nav */}
+      {showCommunityDropdown && (
+        <div className="mobile-channels-floating-card glass animate-fade-in" style={{ position: 'fixed', bottom: '75px', left: '16px', right: '16px', background: 'rgba(10,10,15,0.98)', border: '1px solid var(--color-border)', borderRadius: '12px', zIndex: '999', padding: '12px' }}>
+          <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--color-text-dim)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Official Community Networks</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', fontSize: '0.88rem' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#25d366' }}></span> WhatsApp Channel
+            </a>
+            <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', fontSize: '0.88rem' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#1877f2' }}></span> Facebook Group
+            </a>
+            <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', fontSize: '0.88rem' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#e1306c' }}></span> Instagram Profile
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* Styling specific to header inside JS to keep index.css cleaner */}
       <style>{`
