@@ -208,7 +208,7 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
       {/* Top header bar */}
       <header className="top-header-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 30px' }}>
         {/* Left Side: Logo + Channels Navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div className="mobile-only-header-left" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           {/* Header Logo */}
           <div className="logo-section" onClick={() => { setView('home'); setSearchVal(''); }} style={{ cursor: 'pointer' }}>
             <span className="logo-text gradient-text" style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-secondary)', letterSpacing: '-0.02em' }}>Loom Movies</span>

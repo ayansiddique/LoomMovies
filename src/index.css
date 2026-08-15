@@ -407,6 +407,10 @@ body.theme-aug15 .special-badge {
   z-index: 900;
 }
 
+.mobile-only-header-left {
+  display: none !important;
+}
+
 
 
 /* Sidebar navigation links */
@@ -632,6 +636,9 @@ body.theme-aug15 .special-badge {
   }
   .top-header-bar {
     padding: 0 15px;
+  }
+  .mobile-only-header-left {
+    display: flex !important;
   }
 
   .mobile-bottom-nav {
