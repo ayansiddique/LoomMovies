@@ -121,23 +121,25 @@ export default function App() {
     setView('search');
     setSearchLoading(true);
 
-    // Check for adult/suggestive search terms to redirect them to safe Hindi Movies!
-    let queryLower = query.toLowerCase().trim();
+    const queryLower = query.toLowerCase().trim();
     
-    const ADULT_OVERRIDE_KEYWORDS = [
+    const ADULT_BLOCK_KEYWORDS = [
       'beautiful girl', 'beautiful girls', 'cute figure', 'perfect figure', 'cute figer', 'perfect figer', 
       'figure', 'figer', 'body', 'boobies', 'boobs', 'boob', 'sexy', 'hot girl', 'hot girls', 'sensual', 
-      'erotic', 'adult', 'xxx', 'porn', 'sex', 'nude', 'hentai', 'naked', 'fuck', 'erotik'
+      'erotic', 'adult', 'xxx', 'porn', 'sex', 'nude', 'hentai', 'naked', 'fuck', 'erotik', 'fucking', 
+      'fucking girl', 'fucking girls'
     ];
     
-    const containsAdultTerm = ADULT_OVERRIDE_KEYWORDS.some(word => queryLower.includes(word));
+    const containsAdultTerm = ADULT_BLOCK_KEYWORDS.some(word => queryLower.includes(word));
     
     if (containsAdultTerm) {
-      queryLower = 'hindi movies';
-      setSearchQuery('Hindi Movies');
-    } else {
       setSearchQuery(query);
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
     }
+
+    setSearchQuery(query);
 
     try {
       // 1. Search locally in our custom Islamic list
