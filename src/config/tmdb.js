@@ -44,15 +44,20 @@ export const CURATED_LISTS = {
     { id: 102899, type: 'movie', title: 'Ant-Man' },
     { id: 363088, type: 'movie', title: 'Ant-Man and the Wasp' },
     { id: 640146, type: 'movie', title: 'Ant-Man and the Wasp: Quantumania' },
+    { id: 505537, type: 'movie', title: 'Thor: The Dark World' },
     { id: 505642, type: 'movie', title: 'Black Panther: Wakanda Forever' },
     { id: 566525, type: 'movie', title: 'Shang-Chi and the Legend of the Ten Rings' },
     { id: 10138, type: 'movie', title: 'Iron Man 2' },
+    { id: 68721, type: 'movie', title: 'Iron Man 3' },
     { id: 88396, type: 'tv', title: 'The Falcon and the Winter Soldier' },
-    { id: 92749, type: 'tv', title: 'Moon Knight' }
+    { id: 92749, type: 'tv', title: 'Moon Knight' },
+    { id: 497698, type: 'movie', title: 'Black Widow' },
+    { id: 524434, type: 'movie', title: 'Eternals' },
+    { id: 609681, type: 'movie', title: 'The Marvels' }
   ],
   islamic: [
     { 
-      id: 'youtube-s06pO_O_JpQ', 
+      id: 'youtube-kYJvM99T73k', 
       type: 'movie', 
       title: 'Dr. Israr Ahmed - Bayan-ul-Quran (Part 1)',
       overview: 'Introduction to the Quran, Tafseer and the purpose of human creation by Dr. Israr Ahmed.',
@@ -100,7 +105,7 @@ export const CURATED_LISTS = {
       isCustom: true 
     },
     { 
-      id: 'youtube-kYd7Q9uN17k', 
+      id: 'youtube-k4T0hM6W1iU', 
       type: 'movie', 
       title: 'Dr. Israr Ahmed - Bayan-ul-Quran (Part 2)',
       overview: 'Translation and Tafseer of the Holy Quran, Part 2 (Introduction) by Dr. Israr Ahmed.',
@@ -227,7 +232,14 @@ export const CURATED_LISTS = {
     { id: 67026, type: 'tv', title: 'Mob Psycho 100' },
     { id: 61223, type: 'tv', title: 'Tokyo Ghoul' },
     { id: 207361, type: 'tv', title: 'Bleach: Thousand-Year Blood War' },
-    { id: 60625, type: 'tv', title: 'Haikyu!!' }
+    { id: 60625, type: 'tv', title: 'Haikyu!!' },
+    { id: 211514, type: 'tv', title: 'Solo Leveling' },
+    { id: 216172, type: 'tv', title: 'Kaiju No. 8' },
+    { id: 72813, type: 'tv', title: 'Classroom of the Elite' },
+    { id: 33403, type: 'tv', title: 'Monster' },
+    { id: 61661, type: 'tv', title: 'Your Lie in April' },
+    { id: 10603, type: 'tv', title: 'Code Geass: Lelouch of the Rebellion' },
+    { id: 890, type: 'tv', title: 'Neon Genesis Evangelion' }
   ],
   kdrama: [
     { id: 203870, type: 'tv', title: 'Queen of Tears' },
@@ -255,7 +267,16 @@ export const CURATED_LISTS = {
     { id: 68603, type: 'tv', title: 'Weightlifting Fairy Kim Bok-joo' },
     { id: 111119, type: 'tv', title: 'True Beauty' },
     { id: 206584, type: 'tv', title: 'The Glory' },
-    { id: 96648, type: 'tv', title: 'Sweet Home' }
+    { id: 96648, type: 'tv', title: 'Sweet Home' },
+    { id: 129478, type: 'tv', title: 'Hometown Cha-Cha-Cha' },
+    { id: 214068, type: 'tv', title: 'Strong Girl Nam-soon' },
+    { id: 153870, type: 'tv', title: 'Twenty-Five Twenty-One' },
+    { id: 96162, type: 'tv', title: 'Itaewon Class' },
+    { id: 100185, type: 'tv', title: 'Hospital Playlist' },
+    { id: 242875, type: 'tv', title: 'A Shop for Killers' },
+    { id: 215093, type: 'tv', title: 'Gyeongseong Creature' },
+    { id: 231267, type: 'tv', title: 'Death\'s Game' },
+    { id: 200742, type: 'tv', title: 'Extraordinary Attorney Woo' }
   ],
   chinese: [
     { id: 227871, type: 'tv', title: 'Hidden Love' },
@@ -273,7 +294,9 @@ export const CURATED_LISTS = {
     { id: 137206, type: 'tv', title: 'Till The End Of The Moon' },
     { id: 134331, type: 'tv', title: 'Lighter and Princess' },
     { id: 216503, type: 'tv', title: 'Meet Yourself' },
-    { id: 126435, type: 'tv', title: 'Falling Into Your Smile' }
+    { id: 126435, type: 'tv', title: 'Falling Into Your Smile' },
+    { id: 226871, type: 'tv', title: 'When I Fly Towards You' },
+    { id: 235650, type: 'tv', title: 'Only for Love' }
   ],
   turkish: [
     { id: 66017, type: 'tv', title: 'Resurrection: Ertugrul' },
@@ -286,7 +309,15 @@ export const CURATED_LISTS = {
     { id: 73375, type: 'tv', title: 'The Pit' },
     { id: 209265, type: 'tv', title: 'Golden Boy' },
     { id: 138171, type: 'tv', title: 'Alparslan: Great Seljuk' },
-    { id: 227448, type: 'tv', title: 'The Tailor' }
+    { id: 227448, type: 'tv', title: 'The Tailor' },
+    { id: 67527, type: 'tv', title: 'Ask Laftan Anlamaz' },
+    { id: 88118, type: 'tv', title: 'Hercai' },
+    { id: 80540, type: 'tv', title: 'Erkenci Kus' },
+    { id: 96347, type: 'tv', title: 'Ramo' },
+    { id: 221374, type: 'tv', title: 'Adim Farah' },
+    { id: 218151, type: 'tv', title: 'Aile' },
+    { id: 133726, type: 'tv', title: 'Yargi' },
+    { id: 212558, type: 'tv', title: 'Sahmaran' }
   ],
   punjabi: [
     { id: 1083981, type: 'movie', title: 'Carry On Jatta 3' },
@@ -308,7 +339,24 @@ export const CURATED_LISTS = {
     { id: 587412, type: 'movie', title: 'K.G.F: Chapter 2' },
     { id: 579974, type: 'movie', title: 'RRR' },
     { id: 308639, type: 'movie', title: 'Baahubali: The Beginning' },
-    { id: 350312, type: 'movie', title: 'Baahubali 2: The Conclusion' }
+    { id: 350312, type: 'movie', title: 'Baahubali 2: The Conclusion' },
+    { id: 858017, type: 'movie', title: 'Kalki 2898-AD' },
+    { id: 802219, type: 'movie', title: 'Fighter' },
+    { id: 753232, type: 'movie', title: 'Tiger 3' },
+    { id: 873256, type: 'movie', title: 'Dunki' },
+    { id: 897087, type: 'movie', title: 'Salaar: Part 1 - Ceasefire' },
+    { id: 961261, type: 'movie', title: 'Leo' },
+    { id: 1008005, type: 'movie', title: 'Gadar 2' },
+    { id: 1102919, type: 'movie', title: 'OMG 2' },
+    { id: 948333, type: 'movie', title: 'Dream Girl 2' },
+    { id: 882569, type: 'movie', title: 'Rocky Aur Rani Kii Prem Kahaani' },
+    { id: 1048300, type: 'movie', title: 'Tu Jhoothi Main Makkaar' },
+    { id: 638545, type: 'movie', title: 'Bhool Bhulaiyaa 2' },
+    { id: 680858, type: 'movie', title: 'Shershaah' },
+    { id: 496335, type: 'movie', title: 'Brahmastra Part One: Shiva' },
+    { id: 951556, type: 'movie', title: 'Pushpa 2: The Rule' },
+    { id: 987915, type: 'movie', title: 'Singham Again' },
+    { id: 1111977, type: 'movie', title: 'Stree 2' }
   ],
   hollywood: [
     { id: 872585, type: 'movie', title: 'Oppenheimer' },
@@ -332,7 +380,22 @@ export const CURATED_LISTS = {
     { id: 550, type: 'movie', title: 'Fight Club' },
     { id: 13, type: 'movie', title: 'Forrest Gump' },
     { id: 278, type: 'movie', title: 'The Shawshank Redemption' },
-    { id: 238, type: 'movie', title: 'The Godfather' }
+    { id: 238, type: 'movie', title: 'The Godfather' },
+    { id: 558449, type: 'movie', title: 'Gladiator II' },
+    { id: 589761, type: 'movie', title: 'Dune' },
+    { id: 106646, type: 'movie', title: 'The Wolf of Wall Street' },
+    { id: 240, type: 'movie', title: 'The Godfather Part II' },
+    { id: 769, type: 'movie', title: 'GoodFellas' },
+    { id: 807, type: 'movie', title: 'Se7en' },
+    { id: 274, type: 'movie', title: 'The Silence of the Lambs' },
+    { id: 857, type: 'movie', title: 'Saving Private Ryan' },
+    { id: 424, type: 'movie', title: 'Schindler\'s List' },
+    { id: 497, type: 'movie', title: 'The Green Mile' },
+    { id: 1124, type: 'movie', title: 'The Prestige' },
+    { id: 244786, type: 'movie', title: 'Whiplash' },
+    { id: 68718, type: 'movie', title: 'Django Unchained' },
+    { id: 496243, type: 'movie', title: 'Parasite' },
+    { id: 945961, type: 'movie', title: 'Alien: Romulus' }
   ]
 };
 

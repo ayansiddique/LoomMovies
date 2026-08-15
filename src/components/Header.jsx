@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Film, Heart, Home, Menu, X, Play, Share2, Download, Tv, Monitor, Languages } from 'lucide-react';
+import { Search, Film, Heart, Home, Menu, X, Play, Share2, Download, Tv, Monitor, Languages, ChevronDown } from 'lucide-react';
 import { TMDB_CONFIG, BANNED_KEYWORDS } from '../config/tmdb';
 import { SOCIAL_LINKS } from '../config/social';
 
@@ -110,7 +110,7 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
         {/* Logo Section */}
         <div className="sidebar-logo" onClick={() => { setView('home'); setSearchVal(''); }}>
           <span className="sidebar-logo-text gradient-text">
-            🎬 Loom Movies
+            Loom Movies
           </span>
           {activeTheme === 'aug14' && <span className="special-badge">🇵🇰</span>}
           {activeTheme === 'aug15' && <span className="special-badge">🇮🇳</span>}
@@ -207,11 +207,56 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
 
       {/* Top header bar */}
       <header className="top-header-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 30px' }}>
-        {/* Header Logo (Left aligned) */}
-        <div className="logo-section" onClick={() => { setView('home'); setSearchVal(''); }} style={{ cursor: 'pointer' }}>
-          <span className="logo-text gradient-text" style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-secondary)', letterSpacing: '-0.02em' }}>Loom Movies</span>
-          {activeTheme === 'aug14' && <span className="special-badge">🇵🇰</span>}
-          {activeTheme === 'aug15' && <span className="special-badge">🇮🇳</span>}
+        {/* Left Side: Logo + Channels Navigation */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          {/* Header Logo */}
+          <div className="logo-section" onClick={() => { setView('home'); setSearchVal(''); }} style={{ cursor: 'pointer' }}>
+            <span className="logo-text gradient-text" style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-secondary)', letterSpacing: '-0.02em' }}>Loom Movies</span>
+            {activeTheme === 'aug14' && <span className="special-badge">🇵🇰</span>}
+            {activeTheme === 'aug15' && <span className="special-badge">🇮🇳</span>}
+          </div>
+
+          {/* Header Channels Dropdown (Desktop Only) */}
+          <div className="header-channels-wrapper desktop-only-btn" ref={communityRef} style={{ position: 'relative' }}>
+            <button 
+              className="header-channels-btn" 
+              onClick={(e) => { e.stopPropagation(); setShowCommunityDropdown(!showCommunityDropdown); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '20px',
+                padding: '6px 14px',
+                color: '#fff',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: '0.2s',
+                outline: 'none'
+              }}
+            >
+              <Share2 size={12} className="share-icon" style={{ color: 'var(--color-primary)' }} />
+              <span>Channels</span>
+              <ChevronDown size={12} style={{ opacity: 0.7 }} />
+            </button>
+
+            {/* Community Dropdown floating directly below the button */}
+            {showCommunityDropdown && (
+              <div className="community-dropdown-menu glass animate-fade-in" style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '0', background: 'rgba(10,10,15,0.98)', border: '1px solid var(--color-border)', borderRadius: '12px', zIndex: '999', padding: '8px', width: '200px' }}>
+                <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontSize: '0.82rem', transition: '0.2s' }}>
+                  <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#25d366' }}></span> WhatsApp Channel
+                </a>
+                <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontSize: '0.82rem', transition: '0.2s' }}>
+                  <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#1877f2' }}></span> Facebook Group
+                </a>
+                <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontSize: '0.82rem', transition: '0.2s' }}>
+                  <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#e1306c' }}></span> Instagram Profile
+                </a>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Search Bar Container (Right aligned) */}
