@@ -509,11 +509,17 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                   onBackToServers={() => setActiveServerIndex(1)}
                 />
               ) : (
-                <div className="watch-error-inner">
-                  <AlertTriangle size={40} className="error-icon" />
-                  <h3>Ad-Free Stream Not Found</h3>
-                  <p>We couldn't resolve a clean stream. Please select <b>Server 2 (Backup Player)</b> below!</p>
-                </div>
+                <iframe
+                  src={mediaType === 'movie' 
+                    ? `https://vidlink.pro/movie/${mediaId}?primaryColor=06b6d4&secondaryColor=0891b2&icons=vid`
+                    : `https://vidlink.pro/tv/${mediaId}/${activeEpisode.season}/${activeEpisode.episode}?primaryColor=06b6d4&secondaryColor=0891b2&icons=vid`
+                  }
+                  title={`${title} - Streaming Player`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="video-iframe"
+                ></iframe>
               )
             ) : SERVERS[activeServerIndex]?.id === 'desidub' ? (
               isFetchingHindi ? (
