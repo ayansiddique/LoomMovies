@@ -118,18 +118,25 @@ export default function App() {
   };
 
   const handleSearchSubmit = async (query) => {
-    setSearchQuery(query);
     setView('search');
     setSearchLoading(true);
+
+    // Check for adult/suggestive search terms to redirect them to safe Hindi Movies!
+    let queryLower = query.toLowerCase().trim();
     
-    // Check for banned keywords
-    const queryLower = query.toLowerCase();
-    const isBanned = BANNED_KEYWORDS.some(word => queryLower.includes(word));
+    const ADULT_OVERRIDE_KEYWORDS = [
+      'beautiful girl', 'beautiful girls', 'cute figure', 'perfect figure', 'cute figer', 'perfect figer', 
+      'figure', 'figer', 'body', 'boobies', 'boobs', 'boob', 'sexy', 'hot girl', 'hot girls', 'sensual', 
+      'erotic', 'adult', 'xxx', 'porn', 'sex', 'nude', 'hentai', 'naked', 'fuck', 'erotik'
+    ];
     
-    if (isBanned) {
-      setSearchResults([]);
-      setSearchLoading(false);
-      return;
+    const containsAdultTerm = ADULT_OVERRIDE_KEYWORDS.some(word => queryLower.includes(word));
+    
+    if (containsAdultTerm) {
+      queryLower = 'hindi movies';
+      setSearchQuery('Hindi Movies');
+    } else {
+      setSearchQuery(query);
     }
 
     try {
