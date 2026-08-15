@@ -71,8 +71,9 @@ export default function MovieCard({ item, onClick, inWatchlist, onWatchlistToggl
           background: var(--color-bg-card);
         }
         .movie-card:hover {
-          transform: translateY(-8px) scale(1.03);
-          border-color: var(--color-primary-glow);
+          transform: translateY(-8px) scale(1.05);
+          border-color: var(--color-primary) !important;
+          box-shadow: 0 10px 25px var(--color-primary-glow);
         }
         .poster-wrapper {
           position: relative;

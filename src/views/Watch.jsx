@@ -742,41 +742,58 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
           )}
         </div>
       </div>
-
-      {/* Grid Layout below the player */}
+{/* Grid Layout below the player */}
       <div className="watch-grid-details">
         
         {/* Left Column: Metadata details, episode selector, comments */}
         <div className="details-pane-left">
           {/* Main Info */}
-          <div className="meta-card glass animate-fade-in">
-            <h1 className="movie-watch-title">{title}</h1>
-            
-            {mediaType === 'tv' && (
-              <span className="tv-playing-indicator animate-pulse">
-                Now Playing: <b>Season {activeEpisode.season}, Episode {activeEpisode.episode}</b>
-              </span>
-            )}
-
-            <div className="meta-details-row">
-              <span className="meta-item rating">
-                <Star size={14} fill="currentColor" className="star-icon" /> {rating}
-              </span>
-              <span className="meta-dot">•</span>
-              <span className="meta-item">
-                <Calendar size={14} /> {releaseYear}
-              </span>
-              {runtime > 0 && (
-                <>
-                  <span className="meta-dot">•</span>
-                  <span className="meta-item">
-                    <Clock size={14} /> {runtime} min
-                  </span>
-                </>
+          <div className="meta-card glass animate-fade-in" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap', padding: '24px' }}>
+            <img 
+              src={TMDB_CONFIG.posterUrl(details.poster_path)} 
+              alt={title} 
+              style={{
+                width: '120px',
+                aspectRatio: '2/3',
+                borderRadius: '12px',
+                objectFit: 'cover',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+                flexShrink: 0
+              }}
+            />
+            <div style={{ flex: '1', minWidth: '250px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <h1 className="movie-watch-title" style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800 }}>{title}</h1>
+              
+              {mediaType === 'tv' && (
+                <span className="tv-playing-indicator animate-pulse" style={{ display: 'inline-block', fontSize: '0.85rem', color: 'var(--color-primary)', fontWeight: 'bold' }}>
+                  Now Playing: <b>Season {activeEpisode.season}, Episode {activeEpisode.episode}</b>
+                </span>
               )}
-              <span className="meta-dot">•</span>
-              <span className="meta-type-tag">{mediaType === 'tv' ? 'TV Series' : 'Movie'}</span>
+
+              <div className="meta-details-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '4px', margin: 0 }}>
+                <span className="meta-item rating" style={{ background: 'rgba(255, 153, 51, 0.15)', color: '#ff9933', padding: '2px 8px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                  <Star size={12} fill="currentColor" /> {rating}
+                </span>
+                <span className="meta-dot">•</span>
+                <span className="meta-item" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                  <Calendar size={12} /> {releaseYear}
+                </span>
+                {runtime > 0 && (
+                  <>
+                    <span className="meta-dot">•</span>
+                    <span className="meta-item" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                      <Clock size={12} /> {runtime} min
+                    </span>
+                  </>
+                )}
+                <span className="meta-dot">•</span>
+                <span className="meta-type-tag" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#a78bfa', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                  {mediaType === 'tv' ? 'TV Series' : 'Movie'}
+                </span>
+              </div>
             </div>
+          </div>
 
             {/* Collapsible Description Accordion */}
             <div className="description-accordion" style={{ marginTop: '14px' }}>
@@ -831,7 +848,6 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                 </div>
               </div>
             </div>
-          </div>
 
 
 
