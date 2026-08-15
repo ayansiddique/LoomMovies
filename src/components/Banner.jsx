@@ -251,13 +251,13 @@ export default function Banner({ setView, watchlist, onWatchlistToggle }) {
       <style>{`
         .hero-banner {
           position: relative;
-          height: 85vh;
-          min-height: 600px;
-          max-height: 900px;
+          height: 75vh;
+          min-height: 550px;
+          max-height: 800px;
           width: 100%;
           display: flex;
           align-items: flex-end;
-          padding: 0 6% 100px;
+          padding: 0 8% 80px;
           overflow: hidden;
           margin-bottom: 20px;
         }
@@ -273,87 +273,79 @@ export default function Banner({ setView, watchlist, onWatchlistToggle }) {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transform: scale(1.01);
-          filter: brightness(0.85);
+          transform: scale(1.02);
         }
         .banner-vignette-bottom {
           position: absolute;
           bottom: 0;
           left: 0;
           right: 0;
-          height: 80%;
-          background: linear-gradient(to top, var(--color-bg-deep) 0%, rgba(5, 5, 8, 0.95) 15%, rgba(5, 5, 8, 0.6) 45%, transparent 100%);
+          height: 50%;
+          background: linear-gradient(to top, var(--color-bg-deep) 0%, rgba(5, 5, 8, 0.8) 40%, transparent 100%);
         }
         .banner-vignette-left {
           position: absolute;
           top: 0;
           bottom: 0;
           left: 0;
-          width: 60%;
-          background: linear-gradient(to right, var(--color-bg-deep) 0%, rgba(5, 5, 8, 0.7) 40%, rgba(5, 5, 8, 0.2) 75%, transparent 100%);
+          width: 50%;
+          background: linear-gradient(to right, var(--color-bg-deep) 0%, rgba(5, 5, 8, 0.5) 50%, transparent 100%);
         }
         .banner-content {
           position: relative;
           z-index: 2;
-          max-width: 700px;
+          max-width: 650px;
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 14px;
         }
         .banner-badge {
           display: inline-flex;
           align-items: center;
-          gap: 12px;
-          font-size: 0.95rem;
-          color: #d4d4d8;
-          font-weight: 600;
+          gap: 10px;
+          font-size: 0.9rem;
+          color: var(--color-text-muted);
+          font-weight: 500;
         }
         .star-icon-banner {
           color: var(--color-warning);
-          filter: drop-shadow(0 0 4px var(--color-warning));
         }
         .divider {
-          color: rgba(255, 255, 255, 0.2);
+          color: rgba(255, 255, 255, 0.15);
         }
         .type-badge {
-          background: rgba(124, 58, 237, 0.1);
+          background: var(--color-primary-glow);
           color: #a78bfa;
-          border: 1px solid rgba(124, 58, 237, 0.3);
-          padding: 2px 10px;
-          border-radius: 20px;
-          font-size: 0.72rem;
+          border: 1px solid var(--color-primary);
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 0.75rem;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.05em;
-          box-shadow: 0 0 10px rgba(124, 58, 237, 0.15);
         }
         .banner-title {
-          font-size: 4.2rem;
-          font-weight: 900;
+          font-size: 3.5rem;
+          font-weight: 800;
           line-height: 1.1;
-          letter-spacing: -0.02em;
+          letter-spacing: -0.03em;
           font-family: var(--font-secondary);
-          color: #ffffff;
-          text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+          text-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .banner-genres {
-          font-size: 0.95rem;
+          font-size: 0.9rem;
           color: var(--color-accent);
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          text-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+          font-weight: 600;
+          letter-spacing: 0.05em;
         }
         .banner-overview {
-          font-size: 1.05rem;
+          font-size: 1rem;
           line-height: 1.6;
-          color: #d4d4d8;
-          text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+          color: var(--color-text-muted);
+          text-shadow: 0 2px 5px rgba(0,0,0,0.5);
           display: -webkit-box;
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          margin-bottom: 8px;
         }
         .banner-actions {
           display: flex;
@@ -362,96 +354,56 @@ export default function Banner({ setView, watchlist, onWatchlistToggle }) {
           margin-top: 10px;
         }
         .banner-btn-play {
-          padding: 14px 32px;
+          padding: 12px 28px;
           font-size: 1rem;
-          border-radius: 30px;
-          background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-          border: none;
-          color: white;
-          font-weight: 700;
-          box-shadow: 0 6px 20px var(--color-primary-glow);
-          transition: all 0.3s ease;
-        }
-        .banner-btn-play:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 25px var(--color-primary);
         }
         .banner-btn-watchlist {
-          padding: 14px 28px;
+          padding: 12px 24px;
           font-size: 1rem;
-          border-radius: 30px;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          color: white;
-          font-weight: 700;
-          transition: all 0.3s ease;
-        }
-        .banner-btn-watchlist:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.3);
-          transform: translateY(-3px);
         }
         .banner-btn-watchlist.watchlist-added {
-          background: rgba(16, 185, 129, 0.12);
+          background: rgba(16, 185, 129, 0.1);
           color: var(--color-success);
           border-color: rgba(16, 185, 129, 0.4);
-          box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
         }
         .banner-indicators {
           display: flex;
           gap: 8px;
-          margin-top: 35px;
+          margin-top: 30px;
         }
         .indicator-dot {
           width: 24px;
           height: 4px;
-          background: rgba(255, 255, 255, 0.25);
+          background: rgba(255, 255, 255, 0.2);
           border-radius: 2px;
           cursor: pointer;
-          transition: var(--transition-smooth);
+          transition: var(--transition-fast);
         }
         .indicator-dot.active {
           background: var(--color-primary);
-          width: 44px;
-          box-shadow: 0 0 12px var(--color-primary);
+          width: 40px;
+          box-shadow: 0 0 10px var(--color-primary);
         }
         
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
           .hero-banner {
-            height: 75vh;
-            padding: 0 5% 80px;
-          }
-          .banner-title {
-            font-size: 2.8rem;
-          }
-          .banner-overview {
-            font-size: 0.95rem;
-          }
-        }
-        @media (max-width: 600px) {
-          .hero-banner {
-            height: 80vh;
-            padding: 0 4% 60px;
+            height: 60vh;
+            padding: 0 5% 50px;
           }
           .banner-title {
             font-size: 2.2rem;
           }
           .banner-overview {
-            -webkit-line-clamp: 3;
             font-size: 0.9rem;
+            -webkit-line-clamp: 2;
           }
           .banner-actions {
             flex-direction: column;
             align-items: stretch;
-            gap: 12px;
-          }
-          .banner-btn-play, .banner-btn-watchlist {
-            width: 100%;
-            text-align: center;
+            gap: 10px;
           }
           .banner-indicators {
-            margin-top: 20px;
-            justify-content: center;
+            margin-top: 15px;
           }
         }
       `}</style>

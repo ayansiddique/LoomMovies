@@ -6,20 +6,20 @@
   --font-secondary: 'Plus Jakarta Sans', sans-serif;
 
   /* Color Palette - Premium Obsidian & Glowing Neon Accents */
-  --color-bg-deep: #0A0A0F;
-  --color-bg-card: #16161F;
-  --color-bg-nav: rgba(10, 10, 15, 0.85);
-  --color-border: #2A2A35;
-  --color-border-hover: #8B5CF6;
+  --color-bg-deep: #050508;
+  --color-bg-card: rgba(18, 18, 24, 0.65);
+  --color-bg-nav: rgba(9, 9, 12, 0.75);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(124, 58, 237, 0.4);
   
-  --color-primary: #E50914; /* Electric Red */
-  --color-primary-glow: rgba(229, 9, 20, 0.25);
-  --color-secondary: #8B5CF6; /* Electric Purple */
-  --color-accent: #8B5CF6; 
-  --color-accent-glow: rgba(139, 92, 246, 0.25);
+  --color-primary: #7c3aed; /* Electric Purple */
+  --color-primary-glow: rgba(124, 58, 237, 0.35);
+  --color-secondary: #db2777; /* Deep Pink */
+  --color-accent: #06b6d4; /* Glowing Cyan */
+  --color-accent-glow: rgba(6, 182, 212, 0.3);
 
-  --color-text-main: #ffffff;
-  --color-text-muted: #A0A0B0;
+  --color-text-main: #f4f4f5;
+  --color-text-muted: #a1a1aa;
   --color-text-dim: #71717a;
   
   --color-success: #10b981;
@@ -27,8 +27,8 @@
   --color-error: #ef4444;
 
   /* Glassmorphism, Shadows & Borders */
-  --glass-blur: blur(16px);
-  --glass-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.75);
+  --glass-blur: blur(14px);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   --border-radius-sm: 8px;
   --border-radius-md: 14px;
   --border-radius-lg: 24px;

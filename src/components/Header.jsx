@@ -108,14 +108,12 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
       <div className="header-container">
         {/* Brand Logo */}
         <div className="logo-section" onClick={() => { setView('home'); setSearchVal(''); }}>
-          <span className="logo-text">
-            <span className="logo-icon">🎬</span>LOOM<span style={{ color: 'var(--color-primary)', fontWeight: 400 }}>MOVIES</span>
-          </span>
+          <span className="logo-text gradient-text">Loom Movies</span>
           {activeTheme === 'aug14' && (
-            <span className="special-badge pk">🇵🇰 14 Aug Live</span>
+            <span className="special-badge">🇵🇰 14 Aug Live</span>
           )}
           {activeTheme === 'aug15' && (
-            <span className="special-badge in">🇮🇳 15 Aug Live</span>
+            <span className="special-badge">🇮🇳 15 Aug Live</span>
           )}
         </div>
 
@@ -382,21 +380,14 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
       <style>{`
         .header-nav {
           position: fixed;
-          top: 12px;
-          left: 2%;
-          right: 2%;
-          height: 62px;
-          border-radius: 35px;
-          border: 1px solid rgba(255, 255, 255, 0.08) !important;
-          background: rgba(8, 8, 12, 0.8) !important;
-          backdrop-filter: blur(16px) !important;
-          -webkit-backdrop-filter: blur(16px) !important;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 70px;
           z-index: 1000;
           display: flex;
           align-items: center;
-          padding: 0 24px;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          padding: 0 4%;
         }
         .header-container {
           width: 100%;
@@ -408,46 +399,26 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
         .logo-section {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
           cursor: pointer;
-          flex-shrink: 0;
+        }
+        .logo-img {
+          height: 38px;
+          width: 38px;
+          object-fit: cover;
+          border-radius: 50%;
+          filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6));
+          box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+          transition: transform 0.3s ease;
+        }
+        .logo-img:hover {
+          transform: scale(1.1) rotate(5deg);
         }
         .logo-text {
-          font-size: 1.6rem;
-          font-weight: 900;
-          font-family: var(--font-secondary);
-          letter-spacing: 0.05em;
-          white-space: nowrap;
-          color: white;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-        .logo-icon {
           font-size: 1.5rem;
-          filter: drop-shadow(0 0 8px var(--color-primary-glow));
-        }
-        .special-badge {
-          font-size: 0.7rem;
-          font-weight: 700;
-          padding: 2px 8px;
-          border-radius: 20px;
-          white-space: nowrap;
-          display: inline-flex;
-          align-items: center;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .special-badge.pk {
-          background: rgba(16, 185, 129, 0.15);
-          border-color: rgba(16, 185, 129, 0.3);
-          color: #10b981;
-          box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
-        }
-        .special-badge.in {
-          background: rgba(255, 153, 51, 0.15);
-          border-color: rgba(255, 153, 51, 0.3);
-          color: #ff9933;
-          box-shadow: 0 0 8px rgba(255, 153, 51, 0.2);
+          font-weight: 800;
+          font-family: var(--font-secondary);
+          letter-spacing: -0.03em;
         }
         .desktop-nav {
           display: flex;
@@ -459,31 +430,17 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
           border: none;
           color: var(--color-text-muted);
           font-family: var(--font-primary);
-          font-size: 0.92rem;
-          font-weight: 600;
+          font-size: 0.95rem;
+          font-weight: 500;
           cursor: pointer;
           transition: var(--transition-fast);
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 6px 12px;
-          border-radius: 20px;
-          position: relative;
         }
         .nav-link:hover, .nav-link.active {
-          color: white;
-          background: rgba(255, 255, 255, 0.06);
-        }
-        .nav-link.active::after {
-          content: '';
-          position: absolute;
-          bottom: 2px;
-          left: 12px;
-          right: 12px;
-          height: 2px;
-          background: var(--color-primary);
-          border-radius: 2px;
-          box-shadow: 0 0 8px var(--color-primary);
+          color: var(--color-text-main);
+          text-shadow: 0 0 10px rgba(255,255,255,0.3);
         }
         .watchlist-btn {
           position: relative;
@@ -613,18 +570,18 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
           cursor: pointer;
         }
         .mobile-dropdown {
-          position: fixed;
-          top: 82px;
-          left: 2%;
-          right: 2%;
-          padding: 20px;
-          border-radius: var(--border-radius-md);
-          background: rgba(10, 10, 15, 0.98) !important;
-          backdrop-filter: blur(24px) !important;
-          -webkit-backdrop-filter: blur(24px) !important;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
-          z-index: 999;
+          position: absolute;
+          top: 70px;
+          left: 0;
+          right: 0;
+          padding: 24px 20px 30px;
+          border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+          background: rgba(9, 9, 12, 0.99) !important;
+          backdrop-filter: blur(20px) !important;
+          -webkit-backdrop-filter: blur(20px) !important;
+          border: 1px solid var(--color-border);
+          border-top: none;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.95);
         }
         .mobile-nav {
           display: flex;
