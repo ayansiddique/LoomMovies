@@ -337,6 +337,33 @@ export default function App() {
               onWatchlistToggle={handleWatchlistToggle} 
             />
 
+            {/* Category Filter Pills (Mobile Only Quick Navigation) */}
+            <div className="mobile-categories-row">
+              {[
+                { name: 'Islamic', target: '#islamic' },
+                { name: 'Marvel', target: '#marvel' },
+                { name: 'Anime', target: '#anime' },
+                { name: 'K-Drama', target: '#kdrama' },
+                { name: 'Chinese', target: '#chinese' },
+                { name: 'Turkish', target: '#turkish' },
+                { name: 'Punjabi', target: '#punjabi' },
+                { name: 'Hollywood', target: '#hollywood' }
+              ].map(cat => (
+                <button 
+                  key={cat.name} 
+                  className="mobile-category-pill"
+                  onClick={() => {
+                    const el = document.querySelector(cat.target);
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  }}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+
 
 
             {/* Continue Watching / Watch History (Dynamic LocalStorage) */}
