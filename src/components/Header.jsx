@@ -883,16 +883,16 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
                 <h3>Android Device</h3>
                 <p>Download our official ad-free apk file directly to your Android device.</p>
                 <a 
-                  href="/LoomMovies.apk" 
+                  href="/LoomMovies.apk?v=1.0.1" 
                   download="LoomMovies.apk" 
                   className="download-btn android-btn"
                   onClick={() => {
                     alert("Download starting! Install the APK file on your device. You may need to enable 'Unknown Sources' installation in settings.");
                   }}
                 >
-                  <Download size={16} /> Download APK (v1.0.0)
+                  <Download size={16} /> Download APK (v1.0.1)
                 </a>
-                <span className="app-meta">Size: ~5.4 MB | Android 6.0+</span>
+                <span className="app-meta">Size: ~0.9 MB | Android 6.0+</span>
               </div>
               
               {/* iOS Section */}
