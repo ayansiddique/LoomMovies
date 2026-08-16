@@ -207,17 +207,17 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
 
       {/* Top header bar */}
       <header className="top-header-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 30px' }}>
-        {/* Left Side: Logo + Channels Navigation */}
-        <div className="mobile-only-header-left" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          {/* Header Logo */}
-          <div className="logo-section" onClick={() => { setView('home'); setSearchVal(''); }} style={{ cursor: 'pointer' }}>
-            <span className="logo-text gradient-text" style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-secondary)', letterSpacing: '-0.02em' }}>Loom Movies</span>
-            {activeTheme === 'aug14' && <span className="special-badge">🇵🇰</span>}
-            {activeTheme === 'aug15' && <span className="special-badge">🇮🇳</span>}
-          </div>
+        {/* Left Side: Logo (Mobile Only) */}
+        <div className="mobile-only-header-left" onClick={() => { setView('home'); setSearchVal(''); }} style={{ cursor: 'pointer' }}>
+          <span className="logo-text gradient-text" style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-secondary)', letterSpacing: '-0.02em' }}>Loom Movies</span>
+          {activeTheme === 'aug14' && <span className="special-badge">🇵🇰</span>}
+          {activeTheme === 'aug15' && <span className="special-badge">🇮🇳</span>}
+        </div>
 
-          {/* Header Channels Dropdown (Desktop Only) */}
-          <div className="header-channels-wrapper desktop-only-btn" ref={communityRef} style={{ position: 'relative' }}>
+        {/* Right Side: Channels Dropdown + Search Wrapper */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          {/* Header Channels Dropdown (Mobile Only) */}
+          <div className="header-channels-wrapper mobile-only-header-right-channels" ref={communityRef} style={{ position: 'relative' }}>
             <button 
               className="header-channels-btn" 
               onClick={(e) => { e.stopPropagation(); setShowCommunityDropdown(!showCommunityDropdown); }}
@@ -234,7 +234,8 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
                 fontWeight: 600,
                 cursor: 'pointer',
                 transition: '0.2s',
-                outline: 'none'
+                outline: 'none',
+                whiteSpace: 'nowrap'
               }}
             >
               <Share2 size={12} className="share-icon" style={{ color: 'var(--color-primary)' }} />
@@ -244,7 +245,7 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
 
             {/* Community Dropdown floating directly below the button */}
             {showCommunityDropdown && (
-              <div className="community-dropdown-menu glass animate-fade-in" style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '0', background: 'rgba(10,10,15,0.98)', border: '1px solid var(--color-border)', borderRadius: '12px', zIndex: '999', padding: '8px', width: '200px' }}>
+              <div className="community-dropdown-menu glass animate-fade-in" style={{ position: 'absolute', top: 'calc(100% + 8px)', right: '0', background: 'rgba(10,10,15,0.98)', border: '1px solid var(--color-border)', borderRadius: '12px', zIndex: '999', padding: '8px', width: '200px' }}>
                 <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontSize: '0.82rem', transition: '0.2s' }}>
                   <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#25d366' }}></span> WhatsApp Channel
                 </a>
@@ -257,54 +258,54 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
               </div>
             )}
           </div>
-        </div>
 
-        {/* Search Bar Container (Right aligned) */}
-        <div className="search-wrapper" ref={searchRef} style={{ maxWidth: '320px', width: '100%', position: 'relative' }}>
-          <form onSubmit={handleSearchSubmitLocal} className="search-form" style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--color-border)', borderRadius: '20px', padding: '4px 12px' }}>
-            <input
-              type="text"
-              placeholder="Search movies, anime..."
-              value={searchVal}
-              onChange={handleSearchChange}
-              onFocus={() => setShowSuggestions(true)}
-              className="search-input"
-              style={{ background: 'none', border: 'none', color: '#fff', fontSize: '0.85rem', padding: '6px 8px', outline: 'none', width: '100%' }}
-            />
-            <button type="submit" className="search-btn" style={{ background: 'none', border: 'none', color: '#a0a0b0', cursor: 'pointer' }}>
-              <Search size={16} />
-            </button>
-          </form>
+          {/* Search Bar Container (Right aligned) */}
+          <div className="search-wrapper" ref={searchRef} style={{ maxWidth: '320px', width: '100%', position: 'relative' }}>
+            <form onSubmit={handleSearchSubmitLocal} className="search-form" style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--color-border)', borderRadius: '20px', padding: '4px 12px' }}>
+              <input
+                type="text"
+                placeholder="Search movies, anime..."
+                value={searchVal}
+                onChange={handleSearchChange}
+                onFocus={() => setShowSuggestions(true)}
+                className="search-input"
+                style={{ background: 'none', border: 'none', color: '#fff', fontSize: '0.85rem', padding: '6px 8px', outline: 'none', width: '100%' }}
+              />
+              <button type="submit" className="search-btn" style={{ background: 'none', border: 'none', color: '#a0a0b0', cursor: 'pointer' }}>
+                <Search size={16} />
+              </button>
+            </form>
 
-          {/* Suggestions Dropdown */}
-          {showSuggestions && suggestions.length > 0 && (
-            <div className="search-suggestions glass animate-fade-in" style={{ position: 'absolute', top: '100%', left: '0', right: '0', background: 'rgba(10,10,15,0.98)', border: '1px solid var(--color-border)', borderRadius: '12px', marginTop: '8px', zIndex: '999', padding: '8px' }}>
-              {suggestions.map((item) => (
-                <div 
-                  key={item.id} 
-                  className="suggestion-item" 
-                  onClick={() => handleSuggestionClick(item)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px', borderRadius: '8px', cursor: 'pointer', transition: '0.2s' }}
-                >
-                  <img 
-                    src={TMDB_CONFIG.posterUrl(item.poster_path)} 
-                    alt={item.title || item.name} 
-                    className="suggestion-poster"
-                    style={{ width: '36px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
-                  />
-                  <div className="suggestion-details" style={{ flex: 1 }}>
-                    <div className="suggestion-title" style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>{item.title || item.name}</div>
-                    <div className="suggestion-meta" style={{ fontSize: '0.75rem', color: '#a0a0b0' }}>
-                      <span className="suggestion-type">{item.media_type === 'movie' ? 'Movie' : 'TV Show'}</span>
-                      {item.release_date && <span className="suggestion-year" style={{ marginLeft: '8px' }}>{item.release_date.split('-')[0]}</span>}
-                      {item.first_air_date && <span className="suggestion-year" style={{ marginLeft: '8px' }}>{item.first_air_date.split('-')[0]}</span>}
+            {/* Suggestions Dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="search-suggestions glass animate-fade-in" style={{ position: 'absolute', top: '100%', left: '0', right: '0', background: 'rgba(10,10,15,0.98)', border: '1px solid var(--color-border)', borderRadius: '12px', marginTop: '8px', zIndex: '999', padding: '8px' }}>
+                {suggestions.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="suggestion-item" 
+                    onClick={() => handleSuggestionClick(item)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px', borderRadius: '8px', cursor: 'pointer', transition: '0.2s' }}
+                  >
+                    <img 
+                      src={TMDB_CONFIG.posterUrl(item.poster_path)} 
+                      alt={item.title || item.name} 
+                      className="suggestion-poster"
+                      style={{ width: '36px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                    />
+                    <div className="suggestion-details" style={{ flex: 1 }}>
+                      <div className="suggestion-title" style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff' }}>{item.title || item.name}</div>
+                      <div className="suggestion-meta" style={{ fontSize: '0.75rem', color: '#a0a0b0' }}>
+                        <span className="suggestion-type">{item.media_type === 'movie' ? 'Movie' : 'TV Show'}</span>
+                        {item.release_date && <span className="suggestion-year" style={{ marginLeft: '8px' }}>{item.release_date.split('-')[0]}</span>}
+                        {item.first_air_date && <span className="suggestion-year" style={{ marginLeft: '8px' }}>{item.first_air_date.split('-')[0]}</span>}
+                      </div>
                     </div>
+                    <Play size={12} className="suggestion-play" style={{ color: 'var(--color-primary)' }} />
                   </div>
-                  <Play size={12} className="suggestion-play" style={{ color: 'var(--color-primary)' }} />
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -316,14 +317,6 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
         >
           <Home size={20} />
           <span>Home</span>
-        </button>
-        
-        <button 
-          className={`mobile-bottom-link ${showCommunityDropdown ? 'active' : ''}`}
-          onClick={() => setShowCommunityDropdown(!showCommunityDropdown)}
-        >
-          <Share2 size={20} />
-          <span>Channels</span>
         </button>
         
         <button 
@@ -361,24 +354,6 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
           <span>Get App</span>
         </button>
       </nav>
-
-      {/* Floating Channels Dropdown for Mobile Bottom Nav */}
-      {showCommunityDropdown && (
-        <div className="mobile-channels-floating-card glass animate-fade-in" style={{ position: 'fixed', bottom: '75px', left: '16px', right: '16px', background: 'rgba(10,10,15,0.98)', border: '1px solid var(--color-border)', borderRadius: '12px', zIndex: '999', padding: '12px' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--color-text-dim)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Official Community Networks</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', fontSize: '0.88rem' }}>
-              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#25d366' }}></span> WhatsApp Channel
-            </a>
-            <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', fontSize: '0.88rem' }}>
-              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#1877f2' }}></span> Facebook Group
-            </a>
-            <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', fontSize: '0.88rem' }}>
-              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#e1306c' }}></span> Instagram Profile
-            </a>
-          </div>
-        </div>
-      )}
 
       {/* Styling specific to header inside JS to keep index.css cleaner */}
       <style>{`
@@ -746,10 +721,11 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
           background: rgba(0, 0, 0, 0.85);
           backdrop-filter: blur(8px);
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           justify-content: center;
           z-index: 9999;
-          padding: 20px;
+          padding: 40px 20px;
+          overflow-y: auto;
         }
         .app-modal {
           background: rgba(15, 15, 20, 0.95);

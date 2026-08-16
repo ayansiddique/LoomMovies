@@ -407,7 +407,8 @@ body.theme-aug15 .special-badge {
   z-index: 900;
 }
 
-.mobile-only-header-left {
+.mobile-only-header-left,
+.mobile-only-header-right-channels {
   display: none !important;
 }
 
@@ -637,7 +638,8 @@ body.theme-aug15 .special-badge {
   .top-header-bar {
     padding: 0 15px;
   }
-  .mobile-only-header-left {
+  .mobile-only-header-left,
+  .mobile-only-header-right-channels {
     display: flex !important;
   }
 
