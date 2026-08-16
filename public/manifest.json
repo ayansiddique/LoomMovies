@@ -1,0 +1,23 @@
+{
+  "name": "Loom Movies",
+  "short_name": "Loom Movies",
+  "description": "Loom Movies - Stream Premium Marvel, Anime, & Kdrama free in multiple languages.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0F",
+  "theme_color": "#E50914",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
