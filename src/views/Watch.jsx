@@ -75,6 +75,13 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
   const [activeEpisode, setActiveEpisode] = useState({ season: 1, episode: 1 });
   const [showServers, setShowServers] = useState(false);
 
+  // Smart AI Regional Routing & Fallback States
+  const [isSmartRouting, setIsSmartRouting] = useState(() => {
+    return localStorage.getItem('loom_smart_routing') !== 'false';
+  });
+  const [isSouthAsian, setIsSouthAsian] = useState(false);
+  const [fallbackCountdown, setFallbackCountdown] = useState(null);
+
   // Server Reporting, Fallback Timer and Extension UI States
   const [reportedServers, setReportedServers] = useState(() => {
     try {
@@ -116,6 +123,33 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
     }
   };
 
+  // GeoIP regional preference checker
+  useEffect(() => {
+    if (!isSmartRouting) return;
+    
+    // Quick local locale check
+    const isLocalHiUr = navigator.languages
+      ? navigator.languages.some(lang => /hi|ur|pa/i.test(lang))
+      : /hi|ur|pa/i.test(navigator.language || '');
+      
+    if (isLocalHiUr) {
+      setIsSouthAsian(true);
+    }
+    
+    // Remote GeoIP country check
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.country) {
+          const saCountries = ['PK', 'IN', 'BD', 'NP', 'LK'];
+          if (saCountries.includes(data.country)) {
+            setIsSouthAsian(true);
+          }
+        }
+      })
+      .catch(err => console.log('PWA GeoIP detection skipped:', err));
+  }, [isSmartRouting]);
+
   // Auto-Fallback Alert Trigger
   useEffect(() => {
     setShowFallbackHint(false);
@@ -127,6 +161,37 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
 
     return () => clearTimeout(timer);
   }, [mediaId, activeServerIndex, activeEpisode, isPlayingTrailer]);
+
+  // Fallback countdown controller effect
+  useEffect(() => {
+    if (!isSmartRouting || !showFallbackHint || isPlayingTrailer || SERVERS[activeServerIndex]?.id === 'desidub') {
+      setFallbackCountdown(null);
+      return;
+    }
+    
+    setFallbackCountdown(5); // start a 5-second auto-fallback countdown
+  }, [showFallbackHint, isSmartRouting, activeServerIndex, isPlayingTrailer]);
+
+  useEffect(() => {
+    if (fallbackCountdown === null) return;
+    
+    if (fallbackCountdown === 0) {
+      // Find next server index (wrap around, skipping desidub since desidub is anime-only)
+      let nextIdx = (activeServerIndex + 1) % SERVERS.length;
+      if (SERVERS[nextIdx].id === 'desidub') {
+        nextIdx = (nextIdx + 1) % SERVERS.length;
+      }
+      setActiveServerIndex(nextIdx);
+      setFallbackCountdown(null);
+      return;
+    }
+    
+    const timer = setTimeout(() => {
+      setFallbackCountdown(prev => (prev !== null ? prev - 1 : null));
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [fallbackCountdown]);
 
   useEffect(() => {
     let active = true;
@@ -160,6 +225,24 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
           
           // Save to continue watching / watch history in localStorage
           saveToHistory(data);
+
+          // Smart AI Regional Routing: Auto-default to Server 9 (desidub) for Anime in South Asia
+          if (isSmartRouting) {
+            const isLocalAnime = data && (
+              data.original_language === 'ja' ||
+              data.genres?.some(g => g.name === 'Animation' || g.id === 16)
+            );
+            const isLocalHiUr = navigator.languages
+              ? navigator.languages.some(lang => /hi|ur|pa/i.test(lang))
+              : /hi|ur|pa/i.test(navigator.language || '');
+
+            if (isLocalAnime && (isSouthAsian || isLocalHiUr)) {
+              const desidubIdx = SERVERS.findIndex(s => s.id === 'desidub');
+              if (desidubIdx !== -1) {
+                setActiveServerIndex(desidubIdx);
+              }
+            }
+          }
         }
       } catch (err) {
         console.error(err);
@@ -169,7 +252,7 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
     }
     loadDetails();
     return () => { active = false; };
-  }, [mediaId, mediaType]);
+  }, [mediaId, mediaType, isSouthAsian, isSmartRouting]);
 
   // Fetch direct streaming URL from Consumet API
   useEffect(() => {
@@ -603,6 +686,47 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
             )}
           </div>
 
+          {/* Smart AI Fallback Countdown Warning Alert */}
+          {fallbackCountdown !== null && (
+            <div className="smart-fallback-alert animate-pulse" style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              borderRadius: '8px',
+              padding: '10px 15px',
+              color: '#fca5a5',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginTop: '12px',
+              marginBottom: '4px'
+            }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>⚠️</span>
+                <span>Server loading slow. <b>AI Smart Fallback</b> will switch to <b>{
+                  SERVERS[(activeServerIndex + 1) % SERVERS.length].id === 'desidub' 
+                    ? SERVERS[(activeServerIndex + 2) % SERVERS.length].name 
+                    : SERVERS[(activeServerIndex + 1) % SERVERS.length].name
+                }</b> in <b>{fallbackCountdown}s</b>...</span>
+              </span>
+              <button 
+                onClick={() => setFallbackCountdown(null)} 
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#fff',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  transition: '0.2s'
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
           {/* Player controls (Toggles) */}
           {!mediaId.startsWith('youtube-') && (
             <div className="player-meta-controls">
@@ -707,6 +831,44 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                         </button>
                       );
                     })}
+                  </div>
+
+                  <div className="smart-settings-panel" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 16px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    gap: '12px'
+                  }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'left' }}>
+                      <span style={{ fontWeight: 'bold', color: '#fff', display: 'flex', alignItems: 'center', gap: '4px' }}>🤖 AI Smart Routing</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', lineHeight: '1.2' }}>Auto-loads regional audio (Hindi) & auto-recovers from offline servers.</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const nextVal = !isSmartRouting;
+                        setIsSmartRouting(nextVal);
+                        localStorage.setItem('loom_smart_routing', nextVal ? 'true' : 'false');
+                      }}
+                      style={{
+                        background: isSmartRouting ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)',
+                        border: 'none',
+                        color: '#fff',
+                        padding: '6px 14px',
+                        borderRadius: '20px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        transition: '0.2s',
+                        whiteSpace: 'nowrap',
+                        boxShadow: isSmartRouting ? '0 0 10px var(--color-primary-glow)' : 'none'
+                      }}
+                    >
+                      {isSmartRouting ? 'ON' : 'OFF'}
+                    </button>
                   </div>
 
                   <button
