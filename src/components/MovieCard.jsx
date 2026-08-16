@@ -13,10 +13,41 @@ export default function MovieCard({ item, onClick, inWatchlist, onWatchlistToggl
     onWatchlistToggle(item);
   };
 
+  const getAudioBadge = () => {
+    // Custom check based on item category or lists if available
+    if (typeof item.id === 'string' && item.id.startsWith('youtube-')) {
+      return 'Urdu/Hindi';
+    }
+    const lang = item.original_language;
+    if (lang === 'ko') return 'Korean/Hindi';
+    if (lang === 'ja') return 'Jap/Hindi';
+    if (lang === 'zh' || lang === 'cn') return 'Chinese';
+    if (lang === 'tr') return 'Turkish';
+    if (lang === 'pa') return 'Punjabi';
+    if (lang === 'hi') return 'Hindi';
+    
+    // Fallbacks based on common names or IDs
+    const titleLower = (item.title || item.name || '').toLowerCase();
+    if (titleLower.includes('punjabi') || titleLower.includes('jatta') || titleLower.includes('juliet') || item.id === 1083981 || item.id === 524311 || item.id === 208573 || item.id === 208643 || item.id === 157948 || item.id === 1266014) {
+      return 'Punjabi';
+    }
+    if (titleLower.includes('jawan') || titleLower.includes('animal') || titleLower.includes('pathaan') || titleLower.includes('dangal') || titleLower.includes('shershaah') || titleLower.includes('kalki') || titleLower.includes('fighter') || titleLower.includes('tiger 3') || titleLower.includes('dunki') || titleLower.includes('salaar')) {
+      return 'Hindi';
+    }
+    if (item.media_type === 'tv' || lang === 'en') {
+      return 'Multi-Audio';
+    }
+    return 'English';
+  };
+
   return (
     <div className="movie-card glass glow-purple animate-fade-in" onClick={onClick}>
       {/* Poster Image */}
       <div className="poster-wrapper">
+        {/* Audio Language Badge (Top-right corner of poster) */}
+        <div className="card-audio-badge">
+          {getAudioBadge()}
+        </div>
         <img 
           src={TMDB_CONFIG.posterUrl(item.poster_path)} 
           alt={title} 
@@ -155,6 +186,22 @@ export default function MovieCard({ item, onClick, inWatchlist, onWatchlistToggl
           transform: translateY(0);
           background: var(--color-success);
           border-color: var(--color-success);
+        }
+        .card-audio-badge {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          background: var(--color-primary);
+          background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+          color: white;
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-size: 0.65rem;
+          font-weight: 800;
+          z-index: 5;
+          text-transform: uppercase;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+          letter-spacing: 0.03em;
         }
         .card-rating-badge {
           position: absolute;

@@ -13,7 +13,7 @@ export default function Banner({ setView, watchlist, onWatchlistToggle }) {
     async function loadBannerMovies() {
       setLoading(true);
       try {
-        const CACHE_KEY = 'loom_banner_movies_v4';
+        const CACHE_KEY = 'loom_banner_movies_v5';
         const TIMESTAMP_KEY = 'loom_banner_timestamp';
         const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours cache duration (updates twice daily)
         
