@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Film, Heart, Home, Menu, X, Play, Share2, Download, Tv, Monitor, Languages, ChevronDown } from 'lucide-react';
+import { Search, Film, Heart, Home, Menu, X, Play, Share2, Download, Tv, Monitor, Languages, ChevronDown, ArrowLeft } from 'lucide-react';
 import { TMDB_CONFIG, BANNED_KEYWORDS } from '../config/tmdb';
 import { SOCIAL_LINKS } from '../config/social';
 
@@ -12,6 +12,7 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
   
   const [showCommunityDropdown, setShowCommunityDropdown] = useState(false);
   const [showAppModal, setShowAppModal] = useState(false);
+  const [showMobileSearchOverlay, setShowMobileSearchOverlay] = useState(false);
   const communityRef = useRef(null);
 
   // Close search suggestions and dropdowns on click outside
@@ -320,12 +321,10 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
         </button>
         
         <button 
-          className="mobile-bottom-link"
+          className={`mobile-bottom-link ${showMobileSearchOverlay ? 'active' : ''}`}
           onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => {
-              document.querySelector('.search-input')?.focus();
-            }, 300);
+            setShowMobileSearchOverlay(true);
+            setShowCommunityDropdown(false);
           }}
         >
           <Search size={20} />
@@ -765,16 +764,14 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
           font-size: 1rem;
         }
         .modal-options {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           gap: 20px;
         }
-        @media (max-width: 650px) {
-          .modal-options {
-            grid-template-columns: 1fr;
-          }
-        }
         .modal-card {
+          max-width: 320px;
+          width: 100%;
           padding: 24px;
           border-radius: var(--border-radius-md);
           display: flex;
@@ -894,23 +891,153 @@ export default function Header({ currentView, setView, watchlist, onSearchSubmit
                 </a>
                 <span className="app-meta">Size: ~2.7 MB | Android 6.0+</span>
               </div>
-              
-              {/* iOS Section */}
-              <div className="modal-card ios-card glass">
-                <div className="card-header-icon">🍎</div>
-                <h3>iOS (iPhone / iPad)</h3>
-                <p>Install Loom Movies instantly via Safari without needing the App Store.</p>
-                <div className="ios-steps">
-                  <div className="step">1. Open Safari browser and go to this website.</div>
-                  <div className="step">2. Tap the <b>Share</b> icon at the bottom.</div>
-                  <div className="step">3. Select <b>'Add to Home Screen'</b> from the menu.</div>
-                </div>
-                <button className="download-btn ios-btn" onClick={() => alert("iOS relies on Safari's Add to Home Screen (PWA). Follow the steps listed above to install!")}>
-                  How to Install on iOS
-                </button>
-                <span className="app-meta">No jailbreak needed | All iOS versions</span>
-              </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fullscreen Mobile Search Overlay */}
+      {showMobileSearchOverlay && (
+        <div className="mobile-search-overlay animate-fade-in" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: '#0A0A0F',
+          zIndex: 2000,
+          padding: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '15px'
+        }}>
+          {/* Top Bar: Back Button & Input Form */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              onClick={() => { setShowMobileSearchOverlay(false); setSearchVal(''); }}
+              style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: '8px' }}
+            >
+              <ArrowLeft size={24} />
+            </button>
+            
+            <form 
+              onSubmit={(e) => {
+                handleSearchSubmitLocal(e);
+                setShowMobileSearchOverlay(false);
+              }} 
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '24px',
+                padding: '6px 16px'
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Search movies, anime, series..."
+                value={searchVal}
+                onChange={handleSearchChange}
+                autoFocus
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#fff',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  width: '100%',
+                  fontFamily: 'var(--font-primary)'
+                }}
+              />
+              {searchVal && (
+                <button 
+                  type="button"
+                  onClick={() => setSearchVal('')}
+                  style={{ background: 'none', border: 'none', color: '#a0a0b0', cursor: 'pointer', marginRight: '8px' }}
+                >
+                  <X size={16} />
+                </button>
+              )}
+              <button type="submit" style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer' }}>
+                <Search size={18} />
+              </button>
+            </form>
+          </div>
+
+          {/* Suggestions List in Overlay */}
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {suggestions.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {suggestions.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="suggestion-item-mobile" 
+                    onClick={() => {
+                      handleSuggestionClick(item);
+                      setShowMobileSearchOverlay(false);
+                    }}
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '12px', 
+                      padding: '10px', 
+                      borderRadius: '8px', 
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.04)',
+                      cursor: 'pointer' 
+                    }}
+                  >
+                    <img 
+                      src={TMDB_CONFIG.posterUrl(item.poster_path)} 
+                      alt={item.title || item.name} 
+                      style={{ width: '45px', height: '65px', objectFit: 'cover', borderRadius: '6px' }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff' }}>{item.title || item.name}</div>
+                      <div style={{ fontSize: '0.78rem', color: '#a0a0b0', marginTop: '4px' }}>
+                        <span style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '2px', fontSize: '0.7rem' }}>
+                          {item.media_type === 'movie' ? 'Movie' : 'TV Show'}
+                        </span>
+                        {item.release_date && <span style={{ marginLeft: '8px' }}>{item.release_date.split('-')[0]}</span>}
+                        {item.first_air_date && <span style={{ marginLeft: '8px' }}>{item.first_air_date.split('-')[0]}</span>}
+                      </div>
+                    </div>
+                    <Play size={14} style={{ color: 'var(--color-primary)' }} />
+                  </div>
+                ))}
+              </div>
+            ) : searchVal ? (
+              <p style={{ color: '#a0a0b0', textAlign: 'center', marginTop: '40px', fontSize: '0.9rem' }}>Type to search above...</p>
+            ) : (
+              <div style={{ padding: '20px 10px' }}>
+                <h4 style={{ color: '#fff', marginBottom: '12px', fontSize: '0.95rem' }}>Popular Searches</h4>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {['Avengers', 'Demon Slayer', 'Naruto', 'Squid Game', 'Solo Leveling', 'Mufti Menk'].map(term => (
+                    <button 
+                      key={term}
+                      onClick={() => {
+                        setSearchVal(term);
+                        onSearchSubmit(term);
+                        setShowMobileSearchOverlay(false);
+                      }}
+                      style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid var(--color-border)',
+                        color: '#fff',
+                        padding: '6px 14px',
+                        borderRadius: '20px',
+                        fontSize: '0.82rem',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {term}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
