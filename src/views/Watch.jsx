@@ -81,6 +81,7 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
   });
   const [isSouthAsian, setIsSouthAsian] = useState(false);
   const [fallbackCountdown, setFallbackCountdown] = useState(null);
+  const [isCheckingServers, setIsCheckingServers] = useState(false);
 
   // Server Reporting, Fallback Timer and Extension UI States
   const [reportedServers, setReportedServers] = useState(() => {
@@ -208,6 +209,53 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
     window.addEventListener('blur', handleFocusLoss);
     return () => window.removeEventListener('blur', handleFocusLoss);
   }, [activeServerIndex, fallbackCountdown, showFallbackHint]);
+
+  // Smart AI Server verification on load
+  useEffect(() => {
+    if (typeof mediaId === 'string' && mediaId.startsWith('youtube-')) {
+      return;
+    }
+    
+    let active = true;
+    async function verifyServers() {
+      setIsCheckingServers(true);
+      try {
+        const queryParams = new URLSearchParams({
+          id: mediaId,
+          type: mediaType,
+          season: String(activeEpisode.season),
+          episode: String(activeEpisode.episode)
+        });
+        
+        const res = await fetch(`/api/check-servers?${queryParams.toString()}`);
+        if (!res.ok) throw new Error("API error");
+        
+        const data = await res.json();
+        const workingList = data.workingServers || [];
+        
+        if (active && workingList.length > 0) {
+          // Check if current active server is in the working list
+          const currentServerId = SERVERS[activeServerIndex]?.id;
+          if (!workingList.includes(currentServerId)) {
+            // Find the index of the first working server in our SERVERS list
+            const firstWorkingIdx = SERVERS.findIndex(s => workingList.includes(s.id));
+            if (firstWorkingIdx !== -1) {
+              console.log(`Smart AI Routing: Server ${currentServerId} is unavailable. Switching to working server: ${SERVERS[firstWorkingIdx].name}`);
+              setActiveServerIndex(firstWorkingIdx);
+              setUseCustomPlayer(false);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("AI Server Verification failed:", err);
+      } finally {
+        if (active) setIsCheckingServers(false);
+      }
+    }
+
+    verifyServers();
+    return () => { active = false; };
+  }, [mediaId, mediaType, activeEpisode.season, activeEpisode.episode]);
 
   useEffect(() => {
     let active = true;
@@ -784,6 +832,23 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
               <div className="stream-source-indicators" style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                   <span className="source-label">Source:</span>
+                  {isCheckingServers && (
+                    <span className="ai-checking-badge animate-pulse" style={{
+                      background: 'rgba(6, 182, 212, 0.12)',
+                      border: '1px solid rgba(6, 182, 212, 0.3)',
+                      color: 'var(--color-accent)',
+                      fontSize: '0.72rem',
+                      fontWeight: '700',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      marginRight: '8px'
+                    }}>
+                      <RefreshCw size={10} className="spinner" style={{ animation: 'spin 1s linear infinite' }} /> 🤖 AI Verifying Server Streams...
+                    </span>
+                  )}
                   {directStreamUrl && !isPlayingTrailer && (
                     <button 
                       className={`source-badge ${useCustomPlayer ? 'active' : ''}`}
