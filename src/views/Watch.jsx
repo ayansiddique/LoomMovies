@@ -193,6 +193,22 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
     return () => clearTimeout(timer);
   }, [fallbackCountdown]);
 
+  // Listen for focus shifting to the iframe player (user clicked it to play/interact)
+  useEffect(() => {
+    const handleFocusLoss = () => {
+      setTimeout(() => {
+        if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+          console.log("Smart Routing: User interacted with the iframe player. Canceling auto-fallback.");
+          setFallbackCountdown(null);
+          setShowFallbackHint(false);
+        }
+      }, 150);
+    };
+
+    window.addEventListener('blur', handleFocusLoss);
+    return () => window.removeEventListener('blur', handleFocusLoss);
+  }, [activeServerIndex, fallbackCountdown, showFallbackHint]);
+
   useEffect(() => {
     let active = true;
     async function loadDetails() {
@@ -479,6 +495,31 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
     }
   }, [activeHindiSourceIdx, hindiSources, activeServerIndex]);
 
+  // Update document title and metadata dynamically for SEO
+  useEffect(() => {
+    if (!details) return;
+    
+    const mediaTitle = details.title || details.name;
+    const mediaYear = (details.release_date || details.first_air_date || '').split('-')[0];
+    const typeLabel = mediaType === 'tv' ? 'TV Series' : 'Movie';
+    
+    // Set document title
+    if (mediaType === 'tv') {
+      document.title = `Watch ${mediaTitle} Season ${activeEpisode.season} Episode ${activeEpisode.episode} Online Free - Loom Movies`;
+    } else {
+      document.title = `Watch ${mediaTitle} (${mediaYear}) Full Movie Online Free - Loom Movies`;
+    }
+    
+    // Set meta description
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute(
+        'content', 
+        `Stream ${mediaTitle} (${mediaYear}) ${typeLabel} online in full HD quality. ${details.overview || ''}`.slice(0, 160)
+      );
+    }
+  }, [details, mediaType, activeEpisode]);
+
   const saveToHistory = (item) => {
     if (!item) return;
     const historyKey = 'loom_watch_history';
@@ -650,6 +691,11 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                   poster={TMDB_CONFIG.backdropUrl(details.backdrop_path)}
                   title={title}
                   onBackToServers={() => setUseCustomPlayer(false)}
+                  onVideoLoad={() => {
+                    console.log("Smart Routing: Custom player video playing. Canceling auto-fallback.");
+                    setFallbackCountdown(null);
+                    setShowFallbackHint(false);
+                  }}
                 />
               ) : hindiEmbedUrl ? (
                 <iframe
@@ -673,6 +719,11 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                 poster={TMDB_CONFIG.backdropUrl(details.backdrop_path)}
                 title={title}
                 onBackToServers={() => setUseCustomPlayer(false)}
+                onVideoLoad={() => {
+                  console.log("Smart Routing: Custom player video playing. Canceling auto-fallback.");
+                  setFallbackCountdown(null);
+                  setShowFallbackHint(false);
+                }}
               />
             ) : (
               <iframe

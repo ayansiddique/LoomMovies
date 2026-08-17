@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import Hls from 'hls.js';
 import { Play, Pause, Volume2, VolumeX, Maximize, RotateCcw, Activity, SkipForward, ArrowLeft } from 'lucide-react';
 
-export default function CustomPlayer({ src, poster, title, onBackToServers }) {
+export default function CustomPlayer({ src, poster, title, onBackToServers, onVideoLoad }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const hlsRef = useRef(null);
@@ -246,7 +246,10 @@ export default function CustomPlayer({ src, poster, title, onBackToServers }) {
         onTimeUpdate={handleTimeUpdate}
         onDurationChange={handleDurationChange}
         onWaiting={() => setIsBuffering(true)}
-        onPlaying={() => setIsBuffering(false)}
+        onPlaying={() => {
+          setIsBuffering(false);
+          if (onVideoLoad) onVideoLoad();
+        }}
         playsInline
       ></video>
 

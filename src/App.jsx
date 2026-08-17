@@ -16,27 +16,47 @@ export default function App() {
     const hasLaunched = now >= launchDate;
     
     // Check bypass triggers (URL preview parameter or sessionStorage flag)
-    const isPreview = sessionStorage.getItem('loom_launch_bypass') === 'true' ||
-                      new URLSearchParams(window.location.search).has('preview');
+    const params = new URLSearchParams(window.location.search);
+    const isPreview = sessionStorage.getItem('loom_launch_bypass') === 'true' || params.has('preview');
                       
     if (isPreview) {
       sessionStorage.setItem('loom_launch_bypass', 'true');
-      return 'home';
     }
     
-    if (!hasLaunched) {
+    if (!hasLaunched && !isPreview) {
       return 'prelaunch';
+    }
+
+    const watchId = params.get('watch');
+    if (watchId) {
+      return 'watch';
+    }
+    const urlView = params.get('view');
+    if (urlView === 'watchlist') {
+      return 'watchlist';
+    } else if (urlView === 'search') {
+      return 'search';
     }
     return 'home';
   }); // 'prelaunch', 'home', 'watch', 'watchlist', 'search'
   console.log("DEBUG RENDER: App view=" + view);
-  const [activeMediaId, setActiveMediaId] = useState(null);
-  const [activeMediaType, setActiveMediaType] = useState('movie');
+
+  const [activeMediaId, setActiveMediaId] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('watch') || null;
+  });
+  const [activeMediaType, setActiveMediaType] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('type') || 'movie';
+  });
   const [activeTheme, setActiveTheme] = useState(''); // '', 'aug14', 'aug15'
   
   // User states
   const [watchlist, setWatchlist] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('view') === 'search' ? params.get('q') || '' : '';
+  });
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [historyItems, setHistoryItems] = useState([]);
@@ -81,13 +101,85 @@ export default function App() {
     checkTheme();
   }, []);
 
-  const setViewNavigate = (targetView, id = null, type = 'movie') => {
+  // Sync URL search parameters on load & PopState changes
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const watchId = params.get('watch');
+      const mediaType = params.get('type') || 'movie';
+      const urlView = params.get('view');
+      const q = params.get('q');
+
+      if (watchId) {
+        setView('watch');
+        setActiveMediaId(String(watchId));
+        setActiveMediaType(mediaType);
+      } else if (urlView === 'watchlist') {
+        setView('watchlist');
+      } else if (urlView === 'search') {
+        setView('search');
+        if (q) {
+          setSearchQuery(q);
+          handleSearchSubmit(q, false);
+        } else {
+          setSearchQuery('');
+          setSearchResults([]);
+        }
+      } else {
+        setView('home');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    
+    // Initial run on mount for Search logic
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('view') === 'search') {
+      const q = params.get('q');
+      if (q) {
+        handleSearchSubmit(q, false);
+      }
+    }
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Update document title for non-watch views
+  useEffect(() => {
+    if (view === 'home') {
+      document.title = 'Loom Movies - Stream Premium Marvel, Anime, & Kdrama';
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', 'Loom Movies - The ultimate premium streaming platform for Marvel blockbusters, popular Anime, and romantic Korean Dramas. Watch in multiple languages for free!');
+      }
+    } else if (view === 'watchlist') {
+      document.title = 'My Watchlist - Loom Movies';
+    } else if (view === 'search') {
+      document.title = searchQuery ? `Search results for "${searchQuery}" - Loom Movies` : 'Search Movies & TV Shows - Loom Movies';
+    }
+  }, [view, searchQuery]);
+
+  const setViewNavigate = (targetView, id = null, type = 'movie', searchQ = '') => {
     setView(targetView);
-    if (targetView === 'watch') {
-      setActiveMediaId(id ? String(id) : null);
+    
+    let url = window.location.pathname;
+    if (targetView === 'watch' && id) {
+      setActiveMediaId(String(id));
       setActiveMediaType(type);
+      url += `?watch=${id}&type=${type}`;
+      window.scrollTo(0, 0);
+    } else if (targetView === 'watchlist') {
+      url += `?view=watchlist`;
+      window.scrollTo(0, 0);
+    } else if (targetView === 'search') {
+      url += `?view=search${searchQ ? `&q=${encodeURIComponent(searchQ)}` : ''}`;
+      window.scrollTo(0, 0);
+    } else {
+      url = window.location.pathname;
       window.scrollTo(0, 0);
     }
+    
+    window.history.pushState({ view: targetView, id, type, searchQ }, '', url);
   };
 
   const handleWatchlistToggle = (item) => {
@@ -102,9 +194,14 @@ export default function App() {
     localStorage.setItem('loom_watchlist', JSON.stringify(updated));
   };
 
-  const handleSearchSubmit = async (query) => {
+  const handleSearchSubmit = async (query, shouldPushState = true) => {
     setView('search');
     setSearchLoading(true);
+
+    if (shouldPushState) {
+      let url = `${window.location.pathname}?view=search&q=${encodeURIComponent(query)}`;
+      window.history.pushState({ view: 'search', query }, '', url);
+    }
 
     const queryLower = query.toLowerCase().trim();
     
