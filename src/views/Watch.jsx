@@ -80,8 +80,8 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
     return localStorage.getItem('loom_smart_routing') !== 'false';
   });
   const [isSouthAsian, setIsSouthAsian] = useState(false);
-  const [fallbackCountdown, setFallbackCountdown] = useState(null);
   const [isCheckingServers, setIsCheckingServers] = useState(false);
+  const [isMovieUnavailable, setIsMovieUnavailable] = useState(false);
 
   // Server Reporting, Fallback Timer and Extension UI States
   const [reportedServers, setReportedServers] = useState(() => {
@@ -163,44 +163,12 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
     return () => clearTimeout(timer);
   }, [mediaId, activeServerIndex, activeEpisode, isPlayingTrailer]);
 
-  // Fallback countdown controller effect
-  useEffect(() => {
-    if (!isSmartRouting || !showFallbackHint || isPlayingTrailer || SERVERS[activeServerIndex]?.id === 'desidub') {
-      setFallbackCountdown(null);
-      return;
-    }
-    
-    setFallbackCountdown(5); // start a 5-second auto-fallback countdown
-  }, [showFallbackHint, isSmartRouting, activeServerIndex, isPlayingTrailer]);
-
-  useEffect(() => {
-    if (fallbackCountdown === null) return;
-    
-    if (fallbackCountdown === 0) {
-      // Find next server index (wrap around, skipping desidub since desidub is anime-only)
-      let nextIdx = (activeServerIndex + 1) % SERVERS.length;
-      if (SERVERS[nextIdx].id === 'desidub') {
-        nextIdx = (nextIdx + 1) % SERVERS.length;
-      }
-      setActiveServerIndex(nextIdx);
-      setFallbackCountdown(null);
-      return;
-    }
-    
-    const timer = setTimeout(() => {
-      setFallbackCountdown(prev => (prev !== null ? prev - 1 : null));
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [fallbackCountdown]);
-
   // Listen for focus shifting to the iframe player (user clicked it to play/interact)
   useEffect(() => {
     const handleFocusLoss = () => {
       setTimeout(() => {
         if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
           console.log("Smart Routing: User interacted with the iframe player. Canceling auto-fallback.");
-          setFallbackCountdown(null);
           setShowFallbackHint(false);
         }
       }, 150);
@@ -208,7 +176,7 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
 
     window.addEventListener('blur', handleFocusLoss);
     return () => window.removeEventListener('blur', handleFocusLoss);
-  }, [activeServerIndex, fallbackCountdown, showFallbackHint]);
+  }, [activeServerIndex, showFallbackHint]);
 
   // Smart AI Server verification on load
   useEffect(() => {
@@ -219,6 +187,7 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
     let active = true;
     async function verifyServers() {
       setIsCheckingServers(true);
+      setIsMovieUnavailable(false);
       try {
         const queryParams = new URLSearchParams({
           id: mediaId,
@@ -233,16 +202,32 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
         const data = await res.json();
         const workingList = data.workingServers || [];
         
-        if (active && workingList.length > 0) {
-          // Check if current active server is in the working list
-          const currentServerId = SERVERS[activeServerIndex]?.id;
-          if (!workingList.includes(currentServerId)) {
-            // Find the index of the first working server in our SERVERS list
-            const firstWorkingIdx = SERVERS.findIndex(s => workingList.includes(s.id));
-            if (firstWorkingIdx !== -1) {
-              console.log(`Smart AI Routing: Server ${currentServerId} is unavailable. Switching to working server: ${SERVERS[firstWorkingIdx].name}`);
-              setActiveServerIndex(firstWorkingIdx);
-              setUseCustomPlayer(false);
+        if (active) {
+          if (workingList.length === 0) {
+            console.log(`Smart AI Routing: Movie is unavailable on all servers! Flagging for cleanup.`);
+            setIsMovieUnavailable(true);
+            
+            // Add to localStorage broken list
+            try {
+              const currentBroken = JSON.parse(localStorage.getItem('loom_broken_movies') || '[]');
+              if (!currentBroken.includes(String(mediaId))) {
+                localStorage.setItem('loom_broken_movies', JSON.stringify([...currentBroken, String(mediaId)]));
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          } else {
+            setIsMovieUnavailable(false);
+            // Check if current active server is in the working list
+            const currentServerId = SERVERS[activeServerIndex]?.id;
+            if (!workingList.includes(currentServerId)) {
+              // Find the index of the first working server in our SERVERS list
+              const firstWorkingIdx = SERVERS.findIndex(s => workingList.includes(s.id));
+              if (firstWorkingIdx !== -1) {
+                console.log(`Smart AI Routing: Server ${currentServerId} is unavailable. Switching to working server: ${SERVERS[firstWorkingIdx].name}`);
+                setActiveServerIndex(firstWorkingIdx);
+                setUseCustomPlayer(false);
+              }
             }
           }
         }
@@ -720,6 +705,33 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                 allowFullScreen
                 className="video-iframe"
               ></iframe>
+            ) : isMovieUnavailable ? (
+              <div className="watch-error-inner" style={{ background: 'rgba(239, 68, 68, 0.05)', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '16px', padding: '40px', textAlign: 'center' }}>
+                <AlertTriangle size={40} className="error-icon" style={{ color: 'var(--color-error)' }} />
+                <h3 style={{ margin: 0, color: '#fff', fontSize: '1.25rem' }}>Content Not Available</h3>
+                <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.9rem', maxWidth: '400px', lineHeight: '1.4' }}>
+                  This title is currently not hosted on any of our streaming servers. Our AI has automatically flagged this movie for verification.
+                </p>
+                <button 
+                  onClick={() => setView('home')} 
+                  style={{
+                    background: 'var(--color-primary)',
+                    border: 'none',
+                    color: '#fff',
+                    padding: '8px 20px',
+                    borderRadius: '20px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    fontSize: '0.85rem',
+                    transition: '0.2s',
+                    boxShadow: '0 0 10px var(--color-primary-glow)'
+                  }}
+                >
+                  Back to Homepage
+                </button>
+              </div>
             ) : SERVERS[activeServerIndex]?.id === 'desidub' ? (
               isFetchingHindi ? (
                 <div className="watch-loading-inner animate-pulse">
@@ -741,7 +753,6 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                   onBackToServers={() => setUseCustomPlayer(false)}
                   onVideoLoad={() => {
                     console.log("Smart Routing: Custom player video playing. Canceling auto-fallback.");
-                    setFallbackCountdown(null);
                     setShowFallbackHint(false);
                   }}
                 />
@@ -769,7 +780,6 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                 onBackToServers={() => setUseCustomPlayer(false)}
                 onVideoLoad={() => {
                   console.log("Smart Routing: Custom player video playing. Canceling auto-fallback.");
-                  setFallbackCountdown(null);
                   setShowFallbackHint(false);
                 }}
               />
@@ -785,14 +795,14 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
             )}
           </div>
 
-          {/* Smart AI Fallback Countdown Warning Alert */}
-          {fallbackCountdown !== null && (
-            <div className="smart-fallback-alert animate-pulse" style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
+          {/* Smart AI Fallback Recommendation Alert */}
+          {showFallbackHint && !mediaId.startsWith('youtube-') && SERVERS[activeServerIndex]?.id !== 'desidub' && (
+            <div className="smart-fallback-alert" style={{
+              background: 'rgba(245, 158, 11, 0.1)',
+              border: '1px solid rgba(245, 158, 11, 0.2)',
               borderRadius: '8px',
               padding: '10px 15px',
-              color: '#fca5a5',
+              color: '#fef3c7',
               fontSize: '0.85rem',
               display: 'flex',
               alignItems: 'center',
@@ -802,27 +812,57 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
             }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>⚠️</span>
-                <span>Server loading slow. <b>AI Smart Fallback</b> will switch to <b>{
-                  SERVERS[(activeServerIndex + 1) % SERVERS.length].id === 'desidub' 
-                    ? SERVERS[(activeServerIndex + 2) % SERVERS.length].name 
-                    : SERVERS[(activeServerIndex + 1) % SERVERS.length].name
-                }</b> in <b>{fallbackCountdown}s</b>...</span>
+                <span>Server loading slow? <b>AI Smart Fallback</b> suggests trying <b>{
+                  (() => {
+                    let nextIdx = (activeServerIndex + 1) % SERVERS.length;
+                    if (SERVERS[nextIdx].id === 'desidub') {
+                      nextIdx = (nextIdx + 1) % SERVERS.length;
+                    }
+                    return SERVERS[nextIdx].name;
+                  })()
+                }</b></span>
               </span>
-              <button 
-                onClick={() => setFallbackCountdown(null)} 
-                style={{
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#fff',
-                  padding: '2px 8px',
-                  borderRadius: '4px',
-                  fontSize: '0.75rem',
-                  cursor: 'pointer',
-                  transition: '0.2s'
-                }}
-              >
-                Cancel
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => {
+                    let nextIdx = (activeServerIndex + 1) % SERVERS.length;
+                    if (SERVERS[nextIdx].id === 'desidub') {
+                      nextIdx = (nextIdx + 1) % SERVERS.length;
+                    }
+                    setActiveServerIndex(nextIdx);
+                    setUseCustomPlayer(false);
+                    setShowFallbackHint(false);
+                  }} 
+                  style={{
+                    background: 'var(--color-primary)',
+                    border: 'none',
+                    color: '#fff',
+                    padding: '4px 10px',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    transition: '0.2s'
+                  }}
+                >
+                  Switch Server
+                </button>
+                <button 
+                  onClick={() => setShowFallbackHint(false)} 
+                  style={{
+                    background: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    color: '#fff',
+                    padding: '4px 10px',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
+                    transition: '0.2s'
+                  }}
+                >
+                  Dismiss
+                </button>
+              </div>
             </div>
           )}
 
@@ -882,17 +922,52 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                   )}
                 </div>
 
-                <button 
-                  className={`theater-toggle-btn ${isTheaterMode ? 'active' : ''}`}
-                  onClick={() => setIsTheaterMode(!isTheaterMode)}
-                  title="Toggle Theater Mode"
-                  style={{ marginLeft: 'auto' }}
-                >
+                <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto', alignItems: 'center' }}>
+                  <button 
+                    onClick={() => {
+                      if (confirm("Report this movie as broken? It will be automatically hidden from your homepage lists.")) {
+                        try {
+                          const currentBroken = JSON.parse(localStorage.getItem('loom_broken_movies') || '[]');
+                          if (!currentBroken.includes(String(mediaId))) {
+                            localStorage.setItem('loom_broken_movies', JSON.stringify([...currentBroken, String(mediaId)]));
+                          }
+                          alert("Movie reported! Hiding from homepage catalog.");
+                          setView('home');
+                        } catch (e) {
+                          console.error(e);
+                        }
+                      }
+                    }} 
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.25)',
+                      color: '#fca5a5',
+                      padding: '5px 12px',
+                      borderRadius: '20px',
+                      fontSize: '0.75rem',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      transition: '0.2s',
+                      fontWeight: 'bold'
+                    }}
+                    title="Report if this movie is not working on any server"
+                  >
+                    <AlertTriangle size={12} /> Report Broken Link
+                  </button>
+
+                  <button 
+                    className={`theater-toggle-btn ${isTheaterMode ? 'active' : ''}`}
+                    onClick={() => setIsTheaterMode(!isTheaterMode)}
+                    title="Toggle Theater Mode"
+                  >
                   <Tv size={16} /> {isTheaterMode ? 'Standard Mode' : 'Theater Mode'}
                 </button>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
           {/* Auto-Fallback Toast hint */}
           {showFallbackHint && !mediaId.startsWith('youtube-') && (

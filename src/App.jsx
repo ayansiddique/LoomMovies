@@ -61,6 +61,19 @@ export default function App() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [historyItems, setHistoryItems] = useState([]);
 
+  // Filter out movies flagged as broken by the AI
+  const brokenMovieIds = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('loom_broken_movies') || '[]');
+    } catch (e) {
+      return [];
+    }
+  })();
+
+  const filterCuratedList = (list) => {
+    return (list || []).filter(item => !brokenMovieIds.includes(String(item.id)));
+  };
+
   // Load user data on mount
   useEffect(() => {
     // Load Watchlist
@@ -490,7 +503,7 @@ export default function App() {
             <div id="islamic">
               <MovieRow 
                 title="⭐ Islamic Lectures & Bayans" 
-                itemsList={CURATED_LISTS.islamic} 
+                itemsList={filterCuratedList(CURATED_LISTS.islamic)} 
                 setView={setViewNavigate}
                 watchlist={watchlist}
                 onWatchlistToggle={handleWatchlistToggle}
@@ -501,7 +514,7 @@ export default function App() {
             <div id="marvel">
               <MovieRow 
                 title="Marvel Cinematic Universe" 
-                itemsList={CURATED_LISTS.marvel} 
+                itemsList={filterCuratedList(CURATED_LISTS.marvel)} 
                 setView={setViewNavigate}
                 watchlist={watchlist}
                 onWatchlistToggle={handleWatchlistToggle}
@@ -512,7 +525,7 @@ export default function App() {
             <div id="anime">
               <MovieRow 
                 title="Legendary Anime Collections" 
-                itemsList={CURATED_LISTS.anime} 
+                itemsList={filterCuratedList(CURATED_LISTS.anime)} 
                 setView={setViewNavigate}
                 watchlist={watchlist}
                 onWatchlistToggle={handleWatchlistToggle}
@@ -523,7 +536,7 @@ export default function App() {
             <div id="kdrama">
               <MovieRow 
                 title="Trending Korean Dramas" 
-                itemsList={CURATED_LISTS.kdrama} 
+                itemsList={filterCuratedList(CURATED_LISTS.kdrama)} 
                 setView={setViewNavigate}
                 watchlist={watchlist}
                 onWatchlistToggle={handleWatchlistToggle}
@@ -534,7 +547,7 @@ export default function App() {
             <div id="chinese">
               <MovieRow 
                 title="Sizzling Chinese & Asian Dramas" 
-                itemsList={CURATED_LISTS.chinese} 
+                itemsList={filterCuratedList(CURATED_LISTS.chinese)} 
                 setView={setViewNavigate}
                 watchlist={watchlist}
                 onWatchlistToggle={handleWatchlistToggle}
@@ -545,7 +558,7 @@ export default function App() {
             <div id="turkish">
               <MovieRow 
                 title="Famous Turkish Series Hits" 
-                itemsList={CURATED_LISTS.turkish} 
+                itemsList={filterCuratedList(CURATED_LISTS.turkish)} 
                 setView={setViewNavigate}
                 watchlist={watchlist}
                 onWatchlistToggle={handleWatchlistToggle}
@@ -556,7 +569,7 @@ export default function App() {
             <div id="punjabi">
               <MovieRow 
                 title="Bollywood & Punjabi Hits" 
-                itemsList={CURATED_LISTS.punjabi} 
+                itemsList={filterCuratedList(CURATED_LISTS.punjabi)} 
                 setView={setViewNavigate}
                 watchlist={watchlist}
                 onWatchlistToggle={handleWatchlistToggle}
@@ -567,7 +580,7 @@ export default function App() {
             <div id="hollywood">
               <MovieRow 
                 title="Hollywood Blockbusters" 
-                itemsList={CURATED_LISTS.hollywood} 
+                itemsList={filterCuratedList(CURATED_LISTS.hollywood)} 
                 setView={setViewNavigate}
                 watchlist={watchlist}
                 onWatchlistToggle={handleWatchlistToggle}

@@ -201,10 +201,16 @@ export default async function handler(req, res) {
       try {
         const response = await fetchWithTimeout(embedUrl, { method: 'GET' }, 2000);
         if (!response.ok) {
+          // If VidLink returns 500 status, it is definitely down/not found
           return { id: server.id, available: false };
         }
         
         const html = await response.text();
+        
+        // VidLink returns a very small template size (~18KB) if the movie has no sources
+        if (server.id === 'vidlink-pro' && html.length < 50000) {
+          return { id: server.id, available: false };
+        }
         
         // Fast heuristic text checks first
         const heuristicPassed = heuristicCheck(html);
@@ -231,7 +237,13 @@ export default async function handler(req, res) {
         return { id: server.id, available: true };
       } catch (err) {
         // Fetch failed or timed out
-        return { id: server.id, available: false };
+        // If it failed because of DNS resolution (ENOTFOUND) or connection refused, mark it as false.
+        const code = err.cause?.code || err.code || "";
+        if (code === 'ENOTFOUND' || code === 'ECONNREFUSED') {
+          return { id: server.id, available: false };
+        }
+        // Default to true for other transient errors/timeouts to prevent false negatives
+        return { id: server.id, available: true };
       }
     });
 
