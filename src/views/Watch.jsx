@@ -705,6 +705,12 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                 allowFullScreen
                 className="video-iframe"
               ></iframe>
+            ) : isCheckingServers ? (
+              <div className="watch-loading-inner" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', color: 'var(--color-text-muted)' }}>
+                <RefreshCw className="spinner" size={40} style={{ animation: 'spin 1.5s linear infinite', color: 'var(--color-primary)' }} />
+                <h3 style={{ margin: 0, color: '#fff', fontSize: '1.1rem', fontWeight: 'bold' }}>AI Verifying Servers</h3>
+                <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.8 }}>Searching for a guaranteed working streaming link...</p>
+              </div>
             ) : isMovieUnavailable ? (
               <div className="watch-error-inner" style={{ background: 'rgba(239, 68, 68, 0.05)', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '16px', padding: '40px', textAlign: 'center' }}>
                 <AlertTriangle size={40} className="error-icon" style={{ color: 'var(--color-error)' }} />
