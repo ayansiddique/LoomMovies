@@ -1,5 +1,5 @@
 async function test() {
-  const url = "http://localhost:5173/api/check-servers?id=99999999";
+  const url = "http://localhost:5173/api/check-servers?id=22448";
   try {
     console.log(`Querying local check-servers API: ${url}`);
     const res = await fetch(url);

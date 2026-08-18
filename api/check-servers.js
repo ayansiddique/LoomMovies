@@ -237,11 +237,24 @@ export default async function handler(req, res) {
         return { id: server.id, available: true };
       } catch (err) {
         // Fetch failed or timed out
-        // If it failed because of DNS resolution (ENOTFOUND) or connection refused, mark it as false.
         const code = err.cause?.code || err.code || "";
-        if (code === 'ENOTFOUND' || code === 'ECONNREFUSED') {
+        const name = err.name || "";
+        
+        const deadErrorCodes = [
+          'ENOTFOUND',
+          'ENODATA',
+          'EAI_AGAIN',
+          'ECONNREFUSED',
+          'EHOSTUNREACH',
+          'ECONNRESET',
+          'ETIMEDOUT',
+          'EADDRNOTAVAIL'
+        ];
+        
+        if (deadErrorCodes.includes(code) || name === 'AbortError') {
           return { id: server.id, available: false };
         }
+        
         // Default to true for other transient errors/timeouts to prevent false negatives
         return { id: server.id, available: true };
       }
