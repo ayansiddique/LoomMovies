@@ -5,6 +5,7 @@ import SidebarRecommendations from '../components/SidebarRecommendations';
 import EpisodeSelector from '../components/EpisodeSelector';
 import CommentsSection from '../components/CommentsSection';
 import CustomPlayer from '../components/CustomPlayer';
+import { supabase } from '../config/supabase';
 
 const SERVERS = [
   {
@@ -63,9 +64,17 @@ const SERVERS = [
   }
 ];
 
-export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
+export default function Watch({ mediaId: rawMediaId, mediaType, setView, roomId, setRoomId }) {
   const mediaId = String(rawMediaId);
   const [details, setDetails] = useState(null);
+  
+  // Watch Party States
+  const [isHost, setIsHost] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [nickname, setNickname] = useState(() => {
+    return localStorage.getItem('loom_party_nickname') || `User-${Math.floor(1000 + Math.random() * 9000)}`;
+  });
   const [loading, setLoading] = useState(true);
   const [isPlayingTrailer, setIsPlayingTrailer] = useState(false);
   const [isTheaterMode, setIsTheaterMode] = useState(false);
@@ -241,6 +250,162 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
     verifyServers();
     return () => { active = false; };
   }, [mediaId, mediaType, activeEpisode.season, activeEpisode.episode]);
+
+  // Watch Party room initialization
+  useEffect(() => {
+    if (!roomId) return;
+    
+    let active = true;
+    async function initRoom() {
+      try {
+        const { data: room, error } = await supabase
+          .from('watch_party_rooms')
+          .select('*')
+          .eq('room_id', roomId)
+          .single();
+          
+        if (error || !room) {
+          console.log("Room not found. Creating room as host:", roomId);
+          setIsHost(true);
+          // Insert new room record
+          await supabase.from('watch_party_rooms').insert({
+            room_id: roomId,
+            media_id: String(mediaId),
+            media_type: mediaType,
+            season: activeEpisode.season,
+            episode: activeEpisode.episode,
+            current_server_idx: activeServerIndex,
+            is_playing: false
+          });
+        } else {
+          console.log("Joined existing room as guest:", room);
+          setIsHost(false);
+          // Sync guest local states to matching room states
+          if (active) {
+            setActiveServerIndex(room.current_server_idx);
+            setActiveEpisode({ season: room.season, episode: room.episode });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to initialize Watch Room:", err);
+      }
+    }
+    
+    initRoom();
+    return () => { active = false; };
+  }, [roomId, mediaId]);
+
+  // Host state pushes: update database record when host changes server/episode
+  useEffect(() => {
+    if (!roomId || !isHost) return;
+    
+    async function updateRoomState() {
+      try {
+        await supabase
+          .from('watch_party_rooms')
+          .update({
+            current_server_idx: activeServerIndex,
+            season: activeEpisode.season,
+            episode: activeEpisode.episode,
+            updated_at: new Date().toISOString()
+          })
+          .eq('room_id', roomId);
+      } catch (e) {
+        console.error("Failed to update room state:", e);
+      }
+    }
+    updateRoomState();
+  }, [activeServerIndex, activeEpisode.season, activeEpisode.episode, roomId, isHost]);
+
+  // Guest sync listener: poll database record periodically to catch host changes
+  useEffect(() => {
+    if (!roomId || isHost) return;
+    
+    let active = true;
+    const interval = setInterval(async () => {
+      try {
+        const { data: room, error } = await supabase
+          .from('watch_party_rooms')
+          .select('*')
+          .eq('room_id', roomId)
+          .single();
+          
+        if (!error && room && active) {
+          if (room.current_server_idx !== activeServerIndex) {
+            console.log("Guest Sync: Server updated from host:", room.current_server_idx);
+            setActiveServerIndex(room.current_server_idx);
+            setUseCustomPlayer(false);
+          }
+          if (room.season !== activeEpisode.season || room.episode !== activeEpisode.episode) {
+            console.log("Guest Sync: Episode updated from host:", room.season, room.episode);
+            setActiveEpisode({ season: room.season, episode: room.episode });
+          }
+        }
+      } catch (e) {
+        console.error("Guest polling failed:", e);
+      }
+    }, 2500);
+    
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [roomId, isHost, activeServerIndex, activeEpisode]);
+
+  // Fetch and poll chat messages
+  useEffect(() => {
+    if (!roomId) return;
+    
+    let active = true;
+    async function fetchChats() {
+      try {
+        const { data, error } = await supabase
+          .from('watch_party_chats')
+          .select('*')
+          .eq('room_id', roomId)
+          .order('created_at', { ascending: true });
+          
+        if (!error && data && active) {
+          setChatMessages(data);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    
+    fetchChats();
+    const interval = setInterval(fetchChats, 2000);
+    
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [roomId]);
+
+  const handleSendChat = async (e) => {
+    if (e) e.preventDefault();
+    if (!chatInput.trim() || !roomId) return;
+    
+    const msg = chatInput.trim();
+    setChatInput('');
+    
+    try {
+      await supabase.from('watch_party_chats').insert({
+        room_id: roomId,
+        sender_name: nickname,
+        message: msg
+      });
+      // Fetch instantly on submission
+      const { data } = await supabase
+        .from('watch_party_chats')
+        .select('*')
+        .eq('room_id', roomId)
+        .order('created_at', { ascending: true });
+      if (data) setChatMessages(data);
+    } catch (err) {
+      console.error("Failed to send chat:", err);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -926,6 +1091,50 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
                       <Play size={12} /> Official Trailer
                     </button>
                   )}
+                  {/* Watch Party Controls */}
+                  {roomId ? (
+                    <>
+                      <span className="source-badge" style={{
+                        background: 'rgba(6, 182, 212, 0.12)',
+                        borderColor: 'rgba(6, 182, 212, 0.3)',
+                        color: 'var(--color-accent)'
+                      }}>
+                        👥 Room Active: {roomId}
+                      </span>
+                      <button 
+                        className="source-badge"
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert("Invite link copied to clipboard! Share it with doston to watch together.");
+                        }}
+                        style={{ background: 'rgba(16, 185, 129, 0.12)', borderColor: 'rgba(16, 185, 129, 0.3)', color: '#10b981' }}
+                      >
+                        🔗 Copy Invite Link
+                      </button>
+                      <button 
+                        className="source-badge"
+                        onClick={() => {
+                          if (confirm("Leave this watch room?")) {
+                            setRoomId(null);
+                            setView('watch', mediaId, mediaType);
+                          }
+                        }}
+                      >
+                        🚪 Leave Room
+                      </button>
+                    </>
+                  ) : (
+                    <button 
+                      className="source-badge"
+                      onClick={() => {
+                        const randomRoomId = `loom-party-${Math.random().toString(36).substr(2, 9)}`;
+                        setView('watch', mediaId, mediaType, '', randomRoomId);
+                      }}
+                      title="Create a sync watch room to stream with friends"
+                    >
+                      👥 Create Watch Room
+                    </button>
+                  )}
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto', alignItems: 'center' }}>
@@ -1208,8 +1417,140 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView }) {
           <CommentsSection mediaId={mediaId} mediaType={mediaType} />
         </div>
 
-        {/* Right Column: recommendations */}
+        {/* Right Column: Party Chat / recommendations */}
         <div className="sidebar-pane-right">
+          {roomId ? (
+            <div className="watch-party-chat-container glass" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              height: '480px',
+              borderRadius: '12px',
+              border: '1px solid var(--color-border)',
+              overflow: 'hidden',
+              marginBottom: '24px',
+              background: 'rgba(0, 0, 0, 0.4)'
+            }}>
+              {/* Chat Header */}
+              <div style={{
+                background: 'rgba(255,255,255,0.03)',
+                padding: '12px 16px',
+                borderBottom: '1px solid var(--color-border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <span style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-accent)' }}>
+                  <Sparkles size={16} /> Party Chat ({isHost ? 'Host' : 'Guest'})
+                </span>
+                <span style={{ fontSize: '0.72rem', opacity: 0.6 }}>Code: <b>{roomId}</b></span>
+              </div>
+              
+              {/* Chat Nickname config */}
+              <div style={{
+                padding: '6px 12px',
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '8px'
+              }}>
+                <span style={{ fontSize: '0.72rem', opacity: 0.8 }}>My Nickname:</span>
+                <input 
+                  type="text" 
+                  value={nickname}
+                  onChange={(e) => {
+                    setNickname(e.target.value);
+                    localStorage.setItem('loom_party_nickname', e.target.value);
+                  }}
+                  style={{
+                    background: 'rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    padding: '2px 8px',
+                    fontSize: '0.75rem',
+                    width: '120px'
+                  }}
+                />
+              </div>
+
+              {/* Chat Message list */}
+              <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                padding: '12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                {chatMessages.length === 0 ? (
+                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-dim)', textAlign: 'center', marginTop: '20px' }}>
+                    Welcome to the Watch Party! Share your link to start chatting.
+                  </p>
+                ) : (
+                  chatMessages.map(msg => (
+                    <div key={msg.id} style={{
+                      fontSize: '0.8rem',
+                      lineHeight: '1.4',
+                      background: msg.sender_name === nickname ? 'rgba(6, 182, 212, 0.08)' : 'rgba(255,255,255,0.02)',
+                      padding: '6px 10px',
+                      borderRadius: '8px',
+                      border: msg.sender_name === nickname ? '1px solid rgba(6, 182, 212, 0.15)' : '1px solid transparent',
+                      alignSelf: msg.sender_name === nickname ? 'flex-end' : 'flex-start',
+                      maxWidth: '85%'
+                    }}>
+                      <span style={{ fontWeight: 'bold', color: 'var(--color-accent)', marginRight: '6px' }}>
+                        {msg.sender_name}:
+                      </span>
+                      <span style={{ color: '#fff' }}>{msg.message}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Chat Input form */}
+              <form onSubmit={handleSendChat} style={{
+                padding: '10px',
+                borderTop: '1px solid var(--color-border)',
+                display: 'flex',
+                gap: '8px',
+                background: 'rgba(0,0,0,0.2)'
+              }}>
+                <input 
+                  type="text" 
+                  placeholder="Type a message..."
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  style={{
+                    flex: 1,
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '20px',
+                    color: '#fff',
+                    padding: '6px 12px',
+                    fontSize: '0.8rem'
+                  }}
+                />
+                <button 
+                  type="submit"
+                  style={{
+                    background: 'var(--color-primary)',
+                    border: 'none',
+                    color: '#fff',
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Send
+                </button>
+              </form>
+            </div>
+          ) : null}
+
           <SidebarRecommendations
             currentId={mediaId}
             currentType={mediaType}

@@ -49,6 +49,10 @@ export default function App() {
     const params = new URLSearchParams(window.location.search);
     return params.get('type') || 'movie';
   });
+  const [activeRoomId, setActiveRoomId] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('room') || null;
+  });
   const [activeTheme, setActiveTheme] = useState(''); // '', 'aug14', 'aug15'
   
   // User states
@@ -122,11 +126,13 @@ export default function App() {
       const mediaType = params.get('type') || 'movie';
       const urlView = params.get('view');
       const q = params.get('q');
+      const room = params.get('room');
 
       if (watchId) {
         setView('watch');
         setActiveMediaId(String(watchId));
         setActiveMediaType(mediaType);
+        setActiveRoomId(room);
       } else if (urlView === 'watchlist') {
         setView('watchlist');
       } else if (urlView === 'search') {
@@ -172,14 +178,15 @@ export default function App() {
     }
   }, [view, searchQuery]);
 
-  const setViewNavigate = (targetView, id = null, type = 'movie', searchQ = '') => {
+  const setViewNavigate = (targetView, id = null, type = 'movie', searchQ = '', roomId = null) => {
     setView(targetView);
     
     let url = window.location.pathname;
     if (targetView === 'watch' && id) {
       setActiveMediaId(String(id));
       setActiveMediaType(type);
-      url += `?watch=${id}&type=${type}`;
+      setActiveRoomId(roomId);
+      url += `?watch=${id}&type=${type}${roomId ? `&room=${roomId}` : ''}`;
       window.scrollTo(0, 0);
     } else if (targetView === 'watchlist') {
       url += `?view=watchlist`;
@@ -192,7 +199,7 @@ export default function App() {
       window.scrollTo(0, 0);
     }
     
-    window.history.pushState({ view: targetView, id, type, searchQ }, '', url);
+    window.history.pushState({ view: targetView, id, type, searchQ, room: roomId }, '', url);
   };
 
   const handleWatchlistToggle = (item) => {
@@ -595,6 +602,8 @@ export default function App() {
             mediaId={activeMediaId} 
             mediaType={activeMediaType} 
             setView={setViewNavigate} 
+            roomId={activeRoomId}
+            setRoomId={setActiveRoomId}
           />
         )}
 
