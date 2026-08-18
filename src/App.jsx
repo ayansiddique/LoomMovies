@@ -165,16 +165,26 @@ export default function App() {
 
   // Update document title for non-watch views
   useEffect(() => {
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+
     if (view === 'home') {
       document.title = 'Loom Movies - Stream Premium Marvel, Anime, & Kdrama';
+      canonical.setAttribute('href', 'https://loom-movies.vercel.app/');
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) {
         metaDesc.setAttribute('content', 'Loom Movies - The ultimate premium streaming platform for Marvel blockbusters, popular Anime, and romantic Korean Dramas. Watch in multiple languages for free!');
       }
     } else if (view === 'watchlist') {
       document.title = 'My Watchlist - Loom Movies';
+      canonical.setAttribute('href', 'https://loom-movies.vercel.app/?view=watchlist');
     } else if (view === 'search') {
       document.title = searchQuery ? `Search results for "${searchQuery}" - Loom Movies` : 'Search Movies & TV Shows - Loom Movies';
+      canonical.setAttribute('href', `https://loom-movies.vercel.app/?view=search${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ''}`);
     }
   }, [view, searchQuery]);
 

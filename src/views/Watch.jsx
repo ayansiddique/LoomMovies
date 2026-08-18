@@ -716,6 +716,15 @@ export default function Watch({ mediaId: rawMediaId, mediaType, setView, roomId,
         `Stream ${mediaTitle} (${mediaYear}) ${typeLabel} online in full HD quality. ${details.overview || ''}`.slice(0, 160)
       );
     }
+
+    // Set canonical link
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', `https://loom-movies.vercel.app/?watch=${mediaId}&type=${mediaType}`);
   }, [details, mediaType, activeEpisode]);
 
   const saveToHistory = (item) => {
