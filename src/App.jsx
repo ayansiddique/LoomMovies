@@ -5,6 +5,7 @@ import Banner from './components/Banner';
 import MovieRow from './components/MovieRow';
 import MovieCard from './components/MovieCard';
 import Watch from './views/Watch';
+import Party from './views/Party';
 import PreLaunch from './views/PreLaunch';
 import { CURATED_LISTS, TMDB_CONFIG, BANNED_KEYWORDS } from './config/tmdb';
 import { Heart, Search, Play, RefreshCw, Film, Sparkles, AlertTriangle } from 'lucide-react';
@@ -28,8 +29,9 @@ export default function App() {
     }
 
     const watchId = params.get('watch');
+    const room = params.get('room');
     if (watchId) {
-      return 'watch';
+      return room ? 'party' : 'watch';
     }
     const urlView = params.get('view');
     if (urlView === 'watchlist') {
@@ -129,7 +131,7 @@ export default function App() {
       const room = params.get('room');
 
       if (watchId) {
-        setView('watch');
+        setView(room ? 'party' : 'watch');
         setActiveMediaId(String(watchId));
         setActiveMediaType(mediaType);
         setActiveRoomId(room);
@@ -192,7 +194,7 @@ export default function App() {
     setView(targetView);
     
     let url = window.location.pathname;
-    if (targetView === 'watch' && id) {
+    if ((targetView === 'watch' || targetView === 'party') && id) {
       setActiveMediaId(String(id));
       setActiveMediaType(type);
       setActiveRoomId(roomId);
@@ -609,6 +611,15 @@ export default function App() {
         {/* VIEW: WATCH (YouTube-style watch layout) */}
         {view === 'watch' && activeMediaId && (
           <Watch 
+            mediaId={activeMediaId} 
+            mediaType={activeMediaType} 
+            setView={setViewNavigate} 
+          />
+        )}
+
+        {/* VIEW: PARTY (Watch Together Sync Room) */}
+        {view === 'party' && activeMediaId && (
+          <Party 
             mediaId={activeMediaId} 
             mediaType={activeMediaType} 
             setView={setViewNavigate} 
