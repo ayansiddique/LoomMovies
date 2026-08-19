@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Star, Calendar, Clock, RefreshCw, AlertTriangle, Monitor, Tv, Sparkles, ChevronDown, FileText, Send, Share2 } from 'lucide-react';
 import { fetchMediaDetails, TMDB_CONFIG, BANNED_KEYWORDS } from '../config/tmdb';
-import SidebarRecommendations from '../components/SidebarRecommendations';
 import EpisodeSelector from '../components/EpisodeSelector';
-import CommentsSection from '../components/CommentsSection';
 import CustomPlayer from '../components/CustomPlayer';
 import { supabase } from '../config/supabase';
 
@@ -731,8 +729,6 @@ export default function Party({ mediaId: rawMediaId, mediaType, setView, roomId,
               />
             )}
 
-            {/* Comments */}
-            <CommentsSection mediaId={mediaId} mediaType={mediaType} />
           </div>
 
           {/* Mobile Only: Tabbed Layout Panels */}
@@ -747,9 +743,6 @@ export default function Party({ mediaId: rawMediaId, mediaType, setView, roomId,
                   📋 Episodes
                 </button>
               )}
-              <button className={`tab-header-btn ${activeTab === 'recommended' ? 'active' : ''}`} onClick={() => setActiveTab('recommended')}>
-                🎬 Suggests
-              </button>
               <button className={`tab-header-btn ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>
                 📝 Info
               </button>
@@ -807,10 +800,6 @@ export default function Party({ mediaId: rawMediaId, mediaType, setView, roomId,
                     }
                   }}
                 />
-              )}
-
-              {activeTab === 'recommended' && (
-                <SidebarRecommendations currentId={mediaId} currentType={mediaType} setView={setView} />
               )}
 
               {activeTab === 'info' && (
@@ -921,8 +910,6 @@ export default function Party({ mediaId: rawMediaId, mediaType, setView, roomId,
               <button type="submit" style={{ background: 'var(--color-primary)', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>Send</button>
             </form>
           </div>
-
-          <SidebarRecommendations currentId={mediaId} currentType={mediaType} setView={setView} />
         </div>
 
       </div>

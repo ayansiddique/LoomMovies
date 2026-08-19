@@ -207,6 +207,16 @@ export default async function handler(req, res) {
         
         const html = await response.text();
         
+        // If request is blocked by Cloudflare, we cannot verify, so assume available: true to prevent false negatives
+        const isCloudflare = html.toLowerCase().includes('cloudflare') || 
+                             html.toLowerCase().includes('cf-challenge') || 
+                             html.toLowerCase().includes('challenge-platform') ||
+                             html.toLowerCase().includes('just a moment');
+        
+        if (isCloudflare) {
+          return { id: server.id, available: true };
+        }
+        
         // VidLink returns a very small template size (~18KB) if the movie has no sources
         if (server.id === 'vidlink-pro' && html.length < 50000) {
           return { id: server.id, available: false };
