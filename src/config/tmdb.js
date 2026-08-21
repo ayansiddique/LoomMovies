@@ -398,6 +398,49 @@ export const CURATED_LISTS = {
     { id: 945961, type: 'movie', title: 'Alien: Romulus' }
   ]
 };
+// Caching helper functions for TMDB metadata
+const CACHE_PREFIX = 'loom_media_cache_';
+const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+function getCachedMedia(key) {
+  try {
+    const item = localStorage.getItem(CACHE_PREFIX + key);
+    if (!item) return null;
+    const parsed = JSON.parse(item);
+    if (Date.now() - parsed.timestamp < CACHE_EXPIRY_MS) {
+      return parsed.data;
+    }
+    localStorage.removeItem(CACHE_PREFIX + key);
+  } catch (e) {
+    console.error('Error reading cache:', e);
+  }
+  return null;
+}
+
+function setCachedMedia(key, data) {
+  try {
+    const item = {
+      timestamp: Date.now(),
+      data
+    };
+    localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(item));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      console.warn('LocalStorage quota exceeded. Clearing old movie cache...');
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const keyName = localStorage.key(i);
+        if (keyName && keyName.startsWith(CACHE_PREFIX)) {
+          localStorage.removeItem(keyName);
+        }
+      }
+      try {
+        localStorage.setItem(CACHE_PREFIX + key, JSON.stringify({ timestamp: Date.now(), data }));
+      } catch (retryErr) {
+        console.error('Failed to set cache even after clearing quota:', retryErr);
+      }
+    }
+  }
+}
 
 // API Fetch Helper
 export async function fetchMediaDetails(id, type) {
@@ -427,6 +470,10 @@ export async function fetchMediaDetails(id, type) {
       }
     }
 
+    const cacheKey = `full_${type}_${id}`;
+    const cached = getCachedMedia(cacheKey);
+    if (cached) return cached;
+
     let res = await fetch(`${TMDB_CONFIG.BASE_URL}/${type}/${id}?api_key=${TMDB_CONFIG.API_KEY}&append_to_response=videos,credits,recommendations`);
     if (!res.ok) {
       console.warn(`Fallback fetch for TMDB ID: ${id}`);
@@ -434,7 +481,9 @@ export async function fetchMediaDetails(id, type) {
     }
     if (!res.ok) throw new Error(`Failed to fetch tmdb id: ${id}`);
     const data = await res.json();
-    return { ...data, media_type: type };
+    const result = { ...data, media_type: type };
+    setCachedMedia(cacheKey, result);
+    return result;
   } catch (error) {
     console.error(error);
     return null;
@@ -446,12 +495,24 @@ export async function fetchMediaDetailsLight(id, type) {
     if (typeof id === 'string' && id.startsWith('youtube-')) {
       return fetchMediaDetails(id, type);
     }
+
+    const cacheKey = `light_${type}_${id}`;
+    const cached = getCachedMedia(cacheKey);
+    if (cached) return cached;
+
+    // Check if full details are cached, since it contains everything the light version needs
+    const cachedFull = getCachedMedia(`full_${type}_${id}`);
+    if (cachedFull) return cachedFull;
+
     const res = await fetch(`${TMDB_CONFIG.BASE_URL}/${type}/${id}?api_key=${TMDB_CONFIG.API_KEY}`);
     if (!res.ok) throw new Error(`Failed to fetch light details for tmdb id: ${id}`);
     const data = await res.json();
-    return { ...data, media_type: type };
+    const result = { ...data, media_type: type };
+    setCachedMedia(cacheKey, result);
+    return result;
   } catch (error) {
     console.error(error);
     return null;
   }
 }
+

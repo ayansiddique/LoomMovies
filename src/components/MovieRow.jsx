@@ -1,19 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import MovieCard from './MovieCard';
-import { fetchMediaDetails } from '../config/tmdb';
+import { fetchMediaDetailsLight } from '../config/tmdb';
 
 export default function MovieRow({ title, itemsList, setView, watchlist, onWatchlistToggle }) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const rowCardsRef = useRef(null);
+  const rowRef = useRef(null);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.IntersectionObserver) {
+      setIsVisible(true);
+      return;
+    }
+    if (!rowRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true);
+        observer.disconnect();
+      }
+    }, {
+      rootMargin: '200px', // start fetching data when the row is within 200px of viewport
+    });
+    observer.observe(rowRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
     let active = true;
     async function loadRowData() {
       setLoading(true);
       try {
-        const promises = itemsList.map(item => fetchMediaDetails(item.id, item.type));
+        const promises = itemsList.map(item => fetchMediaDetailsLight(item.id, item.type));
         const results = await Promise.all(promises);
         if (active) {
           // Filter out failed loads
@@ -27,7 +48,7 @@ export default function MovieRow({ title, itemsList, setView, watchlist, onWatch
     }
     loadRowData();
     return () => { active = false; };
-  }, [itemsList]);
+  }, [itemsList, isVisible]);
 
   const handleScroll = (direction) => {
     if (rowCardsRef.current) {
@@ -44,7 +65,7 @@ export default function MovieRow({ title, itemsList, setView, watchlist, onWatch
   };
 
   return (
-    <div className="row-container animate-fade-in-up">
+    <div className="row-container animate-fade-in-up" ref={rowRef}>
       <h2 className="row-title">{title}</h2>
       
       <div className="row-scroll-wrapper">

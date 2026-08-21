@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Banner from './components/Banner';
 import MovieRow from './components/MovieRow';
 import MovieCard from './components/MovieCard';
-import Watch from './views/Watch';
-import Party from './views/Party';
-import PreLaunch from './views/PreLaunch';
+
+const Watch = lazy(() => import('./views/Watch'));
+const Party = lazy(() => import('./views/Party'));
+const PreLaunch = lazy(() => import('./views/PreLaunch'));
+
 import { CURATED_LISTS, TMDB_CONFIG, BANNED_KEYWORDS } from './config/tmdb';
 import { Heart, Search, Play, RefreshCw, Film, Sparkles, AlertTriangle } from 'lucide-react';
 
@@ -118,6 +120,19 @@ export default function App() {
     };
     
     checkTheme();
+  }, []);
+
+  // Load Adsterra dynamic ad script after a 3.5 seconds delay to prevent blocking initial load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (document.querySelector('script[src*="effectivecpmnetwork.com"]')) return;
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://pl30849830.effectivecpmnetwork.com/89/1f/37/891f3786b242127012578b5d009f9a7d.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }, 3500);
+    return () => clearTimeout(timer);
   }, []);
 
   // Sync URL search parameters on load & PopState changes
@@ -433,12 +448,19 @@ export default function App() {
 
   if (view === 'prelaunch') {
     return (
-      <PreLaunch 
-        onBypass={() => {
-          sessionStorage.setItem('loom_launch_bypass', 'true');
-          setView('home');
-        }} 
-      />
+      <Suspense fallback={
+        <div className="search-loading">
+          <RefreshCw size={36} className="spinner" />
+          <p>Loading application...</p>
+        </div>
+      }>
+        <PreLaunch 
+          onBypass={() => {
+            sessionStorage.setItem('loom_launch_bypass', 'true');
+            setView('home');
+          }} 
+        />
+      </Suspense>
     );
   }
 
@@ -608,25 +630,32 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW: WATCH (YouTube-style watch layout) */}
-        {view === 'watch' && activeMediaId && (
-          <Watch 
-            mediaId={activeMediaId} 
-            mediaType={activeMediaType} 
-            setView={setViewNavigate} 
-          />
-        )}
+        <Suspense fallback={
+          <div className="search-loading">
+            <RefreshCw size={36} className="spinner" />
+            <p>Loading view...</p>
+          </div>
+        }>
+          {/* VIEW: WATCH (YouTube-style watch layout) */}
+          {view === 'watch' && activeMediaId && (
+            <Watch 
+              mediaId={activeMediaId} 
+              mediaType={activeMediaType} 
+              setView={setViewNavigate} 
+            />
+          )}
 
-        {/* VIEW: PARTY (Watch Together Sync Room) */}
-        {view === 'party' && activeMediaId && (
-          <Party 
-            mediaId={activeMediaId} 
-            mediaType={activeMediaType} 
-            setView={setViewNavigate} 
-            roomId={activeRoomId}
-            setRoomId={setActiveRoomId}
-          />
-        )}
+          {/* VIEW: PARTY (Watch Together Sync Room) */}
+          {view === 'party' && activeMediaId && (
+            <Party 
+              mediaId={activeMediaId} 
+              mediaType={activeMediaType} 
+              setView={setViewNavigate} 
+              roomId={activeRoomId}
+              setRoomId={setActiveRoomId}
+            />
+          )}
+        </Suspense>
 
         {/* VIEW: WATCHLIST */}
         {view === 'watchlist' && (
